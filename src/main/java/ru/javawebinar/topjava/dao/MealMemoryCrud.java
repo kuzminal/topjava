@@ -32,7 +32,6 @@ public class MealMemoryCrud implements MealDao {
 
     @Override
     public void update(Meal meal) {
-        mealStorage.remove(meal);
         mealStorage.put(meal.getId(), meal);
     }
 
@@ -44,12 +43,5 @@ public class MealMemoryCrud implements MealDao {
     @Override
     public Meal getById(long mealId) {
         return mealStorage.get(mealId);
-    }
-
-    @Override
-    public List<Meal> getAllSorted() {
-        List<Meal> meals = new ArrayList<>(mealStorage.values());
-        meals.sort(Comparator.comparing(Meal::getDateTime));
-        return meals;
     }
 }

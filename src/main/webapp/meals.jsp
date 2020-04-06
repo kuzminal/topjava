@@ -53,6 +53,7 @@
             </c:choose>
         </c:forEach>
     </table>
+    <a href="meals?action=add">Добавить новую еду <img src="img/add.png"></a>
 </section>
 </body>
 </html>

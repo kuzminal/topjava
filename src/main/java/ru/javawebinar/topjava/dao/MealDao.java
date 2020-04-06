@@ -9,6 +9,5 @@ public interface MealDao {
     void delete(long mealId);
     void update(Meal meal);
     List<Meal> getAll();
-    List<Meal> getAllSorted();
     Meal getById(long mealId);
 }

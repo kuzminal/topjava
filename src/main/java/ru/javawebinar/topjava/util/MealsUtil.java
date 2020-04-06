@@ -83,7 +83,7 @@ public class MealsUtil {
 
     public static List<MealTo> convertMealsToTO(List<Meal> meals) {
         List<MealTo> exceeded = new ArrayList<>();
-        MealsUtil.getMeals().forEach(meal ->
+        meals.forEach(meal ->
                 {
                     boolean exceed = sumByDate(meals).get(meal.getDateTime().toLocalDate()) > MealsUtil.getCaloriesPerDay();
                     exceeded.add(new MealTo(meal.getDateTime(), meal.getDescription(), meal.getCalories(), exceed, meal.getId()));

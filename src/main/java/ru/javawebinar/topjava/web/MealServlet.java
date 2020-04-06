@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
 
@@ -34,18 +35,23 @@ public class MealServlet extends HttpServlet {
         String mealId = request.getParameter("mealId") != null ? request.getParameter("mealId") : "";
         String action = request.getParameter("action") != null ? request.getParameter("action") : "";
         log.debug("Action = " + action + " mealId = " + mealId );
-        MealDao mealStorage = storage;
         switch (action) {
             case "delete" :
                 storage.delete(Long.parseLong(mealId));
                 response.sendRedirect("meals");
                 return;
             case "edit" :
-                request.setAttribute("meal", mealStorage.getById(Long.parseLong(mealId)));
+                request.setAttribute("meal", storage.getById(Long.parseLong(mealId)));
+                request.getRequestDispatcher("/mealsEdit.jsp").forward(request, response);
+                break;
+            case "add":
+                Meal meal = new Meal(LocalDateTime.now(), "",0, MealsUtil.generateUUID());
+                storage.add(meal);
+                request.setAttribute("meal", meal);
                 request.getRequestDispatcher("/mealsEdit.jsp").forward(request, response);
                 break;
         }
-        List<MealTo> mealsTo = MealsUtil.convertMealsToTO(mealStorage.getAll());
+        List<MealTo> mealsTo = MealsUtil.convertMealsToTO(storage.getAll());
         mealsTo.sort(Comparator.comparing(MealTo::getDateTime));
         request.setAttribute("meals", mealsTo);
         request.getRequestDispatcher("/meals.jsp").forward(request, response);
