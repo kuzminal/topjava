@@ -14,7 +14,7 @@
 </head>
 <body>
 <section>
-    <form method="post" action="mealsEdit?mealId=${meal.id}&action=edit" enctype="application/x-www-form-urlencoded">
+    <form method="post" action="meals?mealId=${meal.id}&action=edit" enctype="application/x-www-form-urlencoded">
         <input type="hidden" name="mealId" value="${meal.id}">
         <h3>Добавление еды</h3>
         <p>
