@@ -4,17 +4,16 @@ import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.model.MealTo;
 import ru.javawebinar.topjava.util.MealsUtil;
 
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 public class MealMemoryCrud implements MealDao {
-    private List<MealTo> mealStorage = new ArrayList<>();
+    private Map<Long, Meal> mealStorage = new HashMap<>();
     private static final MealMemoryCrud INSTANCE = new MealMemoryCrud();
 
     public MealMemoryCrud() {
-        this.mealStorage = MealsUtil.convertMealsToTO(MealsUtil.getMeals());
+        this.mealStorage = MealsUtil.getMeals().stream()
+        .collect(Collectors.toMap(Meal::getId, meal -> meal));
     }
 
     public static MealMemoryCrud get() {
@@ -22,43 +21,35 @@ public class MealMemoryCrud implements MealDao {
     }
 
     @Override
-    public void addMeal(MealTo meal) {
-        mealStorage.add(meal);
-        mealStorage = MealsUtil.recalculateExceed(mealStorage);
+    public void add(Meal meal) {
+        mealStorage.put(meal.getId(), meal);
     }
 
     @Override
-    public void deleteMeal(String mealId) {
-        MealTo meal = getMealById(mealId);
-        if (meal != null) {
-            mealStorage.remove(meal);
-            mealStorage = MealsUtil.recalculateExceed(mealStorage);
-        }
+    public void delete(long mealId) {
+        mealStorage.remove(mealId);
     }
 
     @Override
-    public void updateMeal(MealTo meal) {
+    public void update(Meal meal) {
         mealStorage.remove(meal);
-        mealStorage.add(meal);
-        mealStorage = MealsUtil.recalculateExceed(mealStorage);
+        mealStorage.put(meal.getId(), meal);
     }
 
     @Override
-    public List<MealTo> getAllMeals() {
-        return mealStorage;
+    public List<Meal> getAll() {
+        return new ArrayList<>(mealStorage.values());
     }
 
     @Override
-    public MealTo getMealById(String mealId) {
-        return mealStorage.stream()
-                .filter(m -> m.getId().equals(mealId))
-                .findFirst().orElse(null);
+    public Meal getById(long mealId) {
+        return mealStorage.get(mealId);
     }
 
     @Override
-    public List<MealTo> getAllSortedMeals() {
-        return mealStorage.stream()
-                .sorted(Comparator.comparing(MealTo::getDateTime))
-                .collect(Collectors.toList());
+    public List<Meal> getAllSorted() {
+        List<Meal> meals = new ArrayList<>(mealStorage.values());
+        meals.sort(Comparator.comparing(Meal::getDateTime));
+        return meals;
     }
 }

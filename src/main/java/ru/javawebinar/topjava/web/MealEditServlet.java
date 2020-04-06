@@ -3,6 +3,7 @@ package ru.javawebinar.topjava.web;
 import org.slf4j.Logger;
 import ru.javawebinar.topjava.dao.MealDao;
 import ru.javawebinar.topjava.dao.MealMemoryCrud;
+import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.model.MealTo;
 import ru.javawebinar.topjava.util.MealsUtil;
 
@@ -37,12 +38,12 @@ public class MealEditServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         request.setCharacterEncoding("UTF-8");
         String mealId = request.getParameter("mealId") != null ? request.getParameter("mealId") : "";
-        MealTo meal = storage.getMealById(mealId);
+        Meal meal = storage.getById(Long.parseLong(mealId));
         saveMeal(request, response, meal);
         response.sendRedirect("meals");
     }
 
-    private void saveMeal(HttpServletRequest request, HttpServletResponse response, MealTo meal) {
+    private void saveMeal(HttpServletRequest request, HttpServletResponse response, Meal meal) {
         String description = request.getParameter("description") != null ? request.getParameter("description") : "";
         String calories = request.getParameter("calories") != null ? request.getParameter("calories") : "";
         String dateTime = request.getParameter("dateTime") != null ? request.getParameter("dateTime") : "";
@@ -51,9 +52,9 @@ public class MealEditServlet extends HttpServlet {
                 meal.setCalories(Integer.parseInt(calories));
                 meal.setDescription(description);
                 meal.setDateTime(LocalDateTime.parse(dateTime));
-                storage.updateMeal(meal);
+                storage.update(meal);
             } else {
-                storage.addMeal(new MealTo(LocalDateTime.parse(dateTime), description, Integer.parseInt(calories), false));
+                storage.add(new Meal(LocalDateTime.parse(dateTime), description, Integer.parseInt(calories), MealsUtil.generateUUID()));
             }
         }
     }

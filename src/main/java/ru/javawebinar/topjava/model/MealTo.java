@@ -1,13 +1,9 @@
 package ru.javawebinar.topjava.model;
 
-import ru.javawebinar.topjava.util.MealsUtil;
-
 import java.time.LocalDateTime;
-import java.util.Random;
-import java.util.UUID;
 
 public class MealTo {
-    private String id;
+    private long id;
     private LocalDateTime dateTime;
 
     private String description;
@@ -16,12 +12,12 @@ public class MealTo {
 
     private boolean excess;
 
-    public MealTo(LocalDateTime dateTime, String description, int calories, boolean excess) {
+    public MealTo(LocalDateTime dateTime, String description, int calories, boolean excess, long id) {
         this.dateTime = dateTime;
         this.description = description;
         this.calories = calories;
         this.excess = excess;
-        this.id = MealsUtil.generateUUID();
+        this.id = id;
     }
 
     @Override
@@ -51,7 +47,7 @@ public class MealTo {
         return excess;
     }
 
-    public String getId() {
+    public long getId() {
         return id;
     }
 
@@ -65,9 +61,5 @@ public class MealTo {
 
     public void setCalories(int calories) {
         this.calories = calories;
-    }
-
-    public void setExcess(boolean excess) {
-        this.excess = excess;
     }
 }

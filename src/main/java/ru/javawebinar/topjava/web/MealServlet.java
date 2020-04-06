@@ -3,9 +3,9 @@ package ru.javawebinar.topjava.web;
 import org.slf4j.Logger;
 import ru.javawebinar.topjava.dao.MealDao;
 import ru.javawebinar.topjava.dao.MealMemoryCrud;
+import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.model.MealTo;
 import ru.javawebinar.topjava.util.MealsUtil;
-import ru.javawebinar.topjava.util.TimeUtil;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -13,6 +13,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Comparator;
+import java.util.List;
 
 import static org.slf4j.LoggerFactory.getLogger;
 
@@ -35,15 +37,17 @@ public class MealServlet extends HttpServlet {
         MealDao mealStorage = storage;
         switch (action) {
             case "delete" :
-                storage.deleteMeal(mealId);
+                storage.delete(Long.parseLong(mealId));
                 response.sendRedirect("meals");
                 return;
             case "edit" :
-                request.setAttribute("meal", mealStorage.getMealById(mealId));
+                request.setAttribute("meal", mealStorage.getById(Long.parseLong(mealId)));
                 request.getRequestDispatcher("/mealsEdit.jsp").forward(request, response);
                 break;
         }
-        request.setAttribute("meals", mealStorage.getAllSortedMeals());
+        List<MealTo> mealsTo = MealsUtil.convertMealsToTO(mealStorage.getAll());
+        mealsTo.sort(Comparator.comparing(MealTo::getDateTime));
+        request.setAttribute("meals", mealsTo);
         request.getRequestDispatcher("/meals.jsp").forward(request, response);
     }
 }

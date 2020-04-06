@@ -9,7 +9,7 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <html>
 <head>
-    <jsp:useBean id="meal" type="ru.javawebinar.topjava.model.MealTo" scope="request"/>
+    <jsp:useBean id="meal" type="ru.javawebinar.topjava.model.Meal" scope="request"/>
     <title>MealEdit</title>
 </head>
 <body>

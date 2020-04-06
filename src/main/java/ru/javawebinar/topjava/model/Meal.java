@@ -7,18 +7,18 @@ import java.util.Random;
 import java.util.UUID;
 
 public class Meal {
-    private String id;
-    private final LocalDateTime dateTime;
+    private long id;
+    private LocalDateTime dateTime;
 
-    private final String description;
+    private String description;
 
-    private final int calories;
+    private int calories;
 
-    public Meal(LocalDateTime dateTime, String description, int calories) {
+    public Meal(LocalDateTime dateTime, String description, int calories, long id) {
         this.dateTime = dateTime;
         this.description = description;
         this.calories = calories;
-        this.id = MealsUtil.generateUUID();
+        this.id = id;
 
     }
 
@@ -34,7 +34,23 @@ public class Meal {
         return calories;
     }
 
-    public String getId() {
+    public long getId() {
         return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
+
+    public void setDateTime(LocalDateTime dateTime) {
+        this.dateTime = dateTime;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setCalories(int calories) {
+        this.calories = calories;
     }
 }

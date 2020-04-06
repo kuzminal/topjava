@@ -13,16 +13,17 @@ import java.util.stream.Collectors;
 public class MealsUtil {
     private static final List<Meal> meals;
     private static final int caloriesPerDay = 2000;
+    private static long mealId = 0;
 
     static {
         meals = Arrays.asList(
-                new Meal(LocalDateTime.of(2020, Month.JANUARY, 30, 10, 0), "Завтрак", 500),
-                new Meal(LocalDateTime.of(2020, Month.JANUARY, 30, 13, 0), "Обед", 1000),
-                new Meal(LocalDateTime.of(2020, Month.JANUARY, 30, 20, 0), "Ужин", 500),
-                new Meal(LocalDateTime.of(2020, Month.JANUARY, 31, 0, 0), "Еда на граничное значение", 100),
-                new Meal(LocalDateTime.of(2020, Month.JANUARY, 31, 10, 0), "Завтрак", 1000),
-                new Meal(LocalDateTime.of(2020, Month.JANUARY, 31, 13, 0), "Обед", 500),
-                new Meal(LocalDateTime.of(2020, Month.JANUARY, 31, 20, 0), "Ужин", 410)
+                new Meal(LocalDateTime.of(2020, Month.JANUARY, 30, 10, 0), "Завтрак", 500, generateUUID()),
+                new Meal(LocalDateTime.of(2020, Month.JANUARY, 30, 13, 0), "Обед", 1000, generateUUID()),
+                new Meal(LocalDateTime.of(2020, Month.JANUARY, 30, 20, 0), "Ужин", 500, generateUUID()),
+                new Meal(LocalDateTime.of(2020, Month.JANUARY, 31, 0, 0), "Еда на граничное значение", 100, generateUUID()),
+                new Meal(LocalDateTime.of(2020, Month.JANUARY, 31, 10, 0), "Завтрак", 1000, generateUUID()),
+                new Meal(LocalDateTime.of(2020, Month.JANUARY, 31, 13, 0), "Обед", 500, generateUUID()),
+                new Meal(LocalDateTime.of(2020, Month.JANUARY, 31, 20, 0), "Ужин", 410, generateUUID())
         );
     }
 
@@ -61,7 +62,7 @@ public class MealsUtil {
                 {
                     if (TimeUtil.isBetweenHalfOpen(meal.getDateTime().toLocalTime(), startTime, endTime)) {
                         boolean exceed = sumByDate.get(meal.getDateTime().toLocalDate()) > caloriesPerDay;
-                        exceeded.add(new MealTo(meal.getDateTime(), meal.getDescription(), meal.getCalories(), exceed));
+                        exceeded.add(new MealTo(meal.getDateTime(), meal.getDescription(), meal.getCalories(), exceed, meal.getId()));
                     }
                 }
         );
@@ -76,7 +77,7 @@ public class MealsUtil {
                 .filter(meal -> TimeUtil.isBetweenHalfOpen(meal.getDateTime().toLocalTime(), startTime, endTime))
                 .map(exceededMeal ->
                         new MealTo(exceededMeal.getDateTime(), exceededMeal.getDescription(), exceededMeal.getCalories(),
-                                sumByDate.get(exceededMeal.getDateTime().toLocalDate()) > caloriesPerDay))
+                                sumByDate.get(exceededMeal.getDateTime().toLocalDate()) > caloriesPerDay, exceededMeal.getId()))
                 .collect(Collectors.toList());
     }
 
@@ -85,7 +86,7 @@ public class MealsUtil {
         MealsUtil.getMeals().forEach(meal ->
                 {
                     boolean exceed = sumByDate(meals).get(meal.getDateTime().toLocalDate()) > MealsUtil.getCaloriesPerDay();
-                    exceeded.add(new MealTo(meal.getDateTime(), meal.getDescription(), meal.getCalories(), exceed));
+                    exceeded.add(new MealTo(meal.getDateTime(), meal.getDescription(), meal.getCalories(), exceed, meal.getId()));
                 }
         );
         return exceeded;
@@ -93,27 +94,13 @@ public class MealsUtil {
 
     private static Map<LocalDate, Integer> sumByDate(List<Meal> meals) {
         Map<LocalDate, Integer> sumByDate = new HashMap<>();
-        MealsUtil.getMeals().forEach(meal ->
+        meals.forEach(meal ->
                 sumByDate.merge(meal.getDateTime().toLocalDate(), meal.getCalories(), Integer::sum)
         );
         return sumByDate;
     }
 
-    public static List<MealTo> recalculateExceed(List<MealTo> meals) {
-        Map<LocalDate, Integer> sumByDate = meals.stream()
-                .collect(Collectors.groupingBy(meal ->
-                        meal.getDateTime().toLocalDate(), Collectors.summingInt(MealTo::getCalories)));
-        List<MealTo> recalculatedMeals = new ArrayList<>();
-        meals.forEach(meal ->
-                {
-                    boolean exceed = sumByDate.get(meal.getDateTime().toLocalDate()) > MealsUtil.getCaloriesPerDay();
-                    recalculatedMeals.add(new MealTo(meal.getDateTime(), meal.getDescription(), meal.getCalories(), exceed));
-                }
-        );
-        return recalculatedMeals;
-    }
-
-    public static synchronized String generateUUID() {
-        return UUID.randomUUID().toString();
+    public static synchronized long generateUUID() {
+        return mealId++;
     }
 }
