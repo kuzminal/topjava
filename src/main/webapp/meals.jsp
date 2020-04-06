@@ -14,7 +14,7 @@
     <title>Meals</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <link rel="stylesheet" href="css/style.css">
- </head>
+</head>
 <body>
 <h3><a href="index.html">Home</a></h3>
 <hr>
@@ -29,28 +29,15 @@
         </tr>
         <c:forEach items="${meals}" var="mealTo">
             <jsp:useBean id="mealTo" type="ru.javawebinar.topjava.model.MealTo"/>
-            <c:choose>
-                <c:when test="${mealTo.excess}">
-                    <tr style="color: red">
-                        <td><fmt:parseDate value="${ mealTo.dateTime }" pattern="yyyy-MM-dd'T'HH:mm" var="parsedDateTime" type="both" />
-                            <fmt:formatDate pattern="dd.MM.yyyy HH:mm" value="${ parsedDateTime }" /></td>
-                        <td>${mealTo.description}</td>
-                        <td>${mealTo.calories}</td>
-                        <td><a href="meals?mealId=${mealTo.id}&action=delete"><img src="img/delete.png"></a></td>
-                        <td><a href="meals?mealId=${mealTo.id}&action=edit"><img src="img/pencil.png"></a></td>
-                    </tr>
-                </c:when>
-                <c:otherwise>
-                    <tr style="color: green">
-                        <td><fmt:parseDate value="${ mealTo.dateTime }" pattern="yyyy-MM-dd'T'HH:mm" var="parsedDateTime" type="both" />
-                            <fmt:formatDate pattern="dd.MM.yyyy HH:mm" value="${ parsedDateTime }" /></td>
-                        <td>${mealTo.description}</td>
-                        <td>${mealTo.calories}</td>
-                        <td><a href="meals?mealId=${mealTo.id}&action=delete"><img src="img/delete.png"></a></td>
-                        <td><a href="meals?mealId=${mealTo.id}&action=edit"><img src="img/pencil.png"></a></td>
-                    </tr>
-                </c:otherwise>
-            </c:choose>
+            <tr <%= mealTo.isExcess() ? "style=\"color: red\"" : "style=\"color: green\"" %>>
+                <td><fmt:parseDate value="${ mealTo.dateTime }" pattern="yyyy-MM-dd'T'HH:mm" var="parsedDateTime"
+                                   type="both"/>
+                    <fmt:formatDate pattern="dd.MM.yyyy HH:mm" value="${ parsedDateTime }"/></td>
+                <td>${mealTo.description}</td>
+                <td>${mealTo.calories}</td>
+                <td><a href="meals?mealId=${mealTo.id}&action=delete"><img src="img/delete.png"></a></td>
+                <td><a href="meals?mealId=${mealTo.id}&action=edit"><img src="img/pencil.png"></a></td>
+            </tr>
         </c:forEach>
     </table>
     <a href="meals?action=add">Добавить новую еду <img src="img/add.png"></a>
