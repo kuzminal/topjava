@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Comparator;
 import java.util.List;
 
@@ -51,7 +52,7 @@ public class MealServlet extends HttpServlet {
                 request.getRequestDispatcher("/mealsEdit.jsp").forward(request, response);
                 break;
         }
-        List<MealTo> mealsTo = MealsUtil.convertMealsToTO(storage.getAll());
+        List<MealTo> mealsTo = MealsUtil.filteredByStreams(storage.getAll(), LocalTime.MIN, LocalTime.MAX, MealsUtil.getCaloriesPerDay());
         mealsTo.sort(Comparator.comparing(MealTo::getDateTime));
         request.setAttribute("meals", mealsTo);
         request.getRequestDispatcher("/meals.jsp").forward(request, response);
