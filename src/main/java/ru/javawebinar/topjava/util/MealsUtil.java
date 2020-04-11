@@ -72,7 +72,7 @@ public class MealsUtil {
                 .collect(Collectors.toList());
     }
 
-    public static synchronized long generateUUID() {
+    public static long generateUUID() {
         return mealId.incrementAndGet();
     }
 }
