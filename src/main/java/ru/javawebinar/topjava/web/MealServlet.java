@@ -28,7 +28,10 @@ public class MealServlet extends HttpServlet {
     @Override
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
-        storage = new MealMemoryCrud(MealsUtil.getMeals());
+        storage = new MealMemoryCrud();
+        MealsUtil.getMeals().forEach(meal -> {
+            storage.save(meal);
+        });
     }
 
     @Override

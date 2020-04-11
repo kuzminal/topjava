@@ -12,9 +12,8 @@ import java.util.stream.Collectors;
 public class MealMemoryCrud implements MealDao {
     private ConcurrentMap<Long, Meal> mealStorage;
 
-    public MealMemoryCrud(List<Meal> meals) {
-        this.mealStorage = meals.stream()
-                .collect(Collectors.toConcurrentMap(Meal::getId, meal -> meal));
+    public MealMemoryCrud() {
+        this.mealStorage = new ConcurrentHashMap<>();
     }
 
     @Override

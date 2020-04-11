@@ -29,7 +29,6 @@ public class MealsUtil {
     }
 
     public static List<Meal> getMeals() {
-        meals.forEach(meal -> meal.setId(MealsUtil.generateUUID()));
         return meals;
     }
 
