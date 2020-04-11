@@ -5,34 +5,31 @@ import ru.javawebinar.topjava.model.MealTo;
 import ru.javawebinar.topjava.util.MealsUtil;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.stream.Collectors;
 
 public class MealMemoryCrud implements MealDao {
-    private Map<Long, Meal> mealStorage = new HashMap<>();
-    private static final MealMemoryCrud INSTANCE = new MealMemoryCrud();
+    private ConcurrentMap<Long, Meal> mealStorage;
 
-    public MealMemoryCrud() {
-        this.mealStorage = MealsUtil.getMeals().stream()
-        .collect(Collectors.toMap(Meal::getId, meal -> meal));
-    }
-
-    public static MealMemoryCrud get() {
-        return INSTANCE;
+    public MealMemoryCrud(List<Meal> meals) {
+        this.mealStorage = meals.stream()
+                .collect(Collectors.toConcurrentMap(Meal::getId, meal -> meal));
     }
 
     @Override
-    public void add(Meal meal) {
+    public void save(Meal meal) {
+        long mealId = meal.getId();
+        if (mealId == 0 ) {
+            mealId = MealsUtil.generateUUID();
+            meal.setId(mealId);
+        }
         mealStorage.put(meal.getId(), meal);
     }
 
     @Override
     public void delete(long mealId) {
         mealStorage.remove(mealId);
-    }
-
-    @Override
-    public void update(Meal meal) {
-        mealStorage.put(meal.getId(), meal);
     }
 
     @Override
