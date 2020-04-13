@@ -14,7 +14,6 @@ import java.util.stream.Collectors;
 public class MealsUtil {
     private static final List<Meal> meals;
     private static final int caloriesPerDay = 2000;
-    private static AtomicLong mealId = new AtomicLong();
 
     static {
         meals = Arrays.asList(
@@ -70,9 +69,5 @@ public class MealsUtil {
                         new MealTo(exceededMeal.getDateTime(), exceededMeal.getDescription(), exceededMeal.getCalories(),
                                 sumByDate.get(exceededMeal.getDateTime().toLocalDate()) > caloriesPerDay, exceededMeal.getId()))
                 .collect(Collectors.toList());
-    }
-
-    public static long generateUUID() {
-        return mealId.incrementAndGet();
     }
 }

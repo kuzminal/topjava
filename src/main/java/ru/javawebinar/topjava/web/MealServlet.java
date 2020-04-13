@@ -47,13 +47,12 @@ public class MealServlet extends HttpServlet {
             case "edit":
                 request.setAttribute("meal", storage.getById(Long.parseLong(mealId)));
                 request.getRequestDispatcher("/mealsEdit.jsp").forward(request, response);
-                break;
+                return;
             case "add":
                 Meal meal = new Meal(LocalDateTime.now(), "", 0);
-                storage.save(meal);
                 request.setAttribute("meal", meal);
                 request.getRequestDispatcher("/mealsEdit.jsp").forward(request, response);
-                break;
+                return;
         }
         List<MealTo> mealsTo = MealsUtil.filteredByStreams(storage.getAll(), LocalTime.MIN, LocalTime.MAX, MealsUtil.getCaloriesPerDay());
         mealsTo.sort(Comparator.comparing(MealTo::getDateTime));
@@ -65,11 +64,11 @@ public class MealServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         request.setCharacterEncoding("UTF-8");
         String mealId = request.getParameter("mealId") != null ? request.getParameter("mealId") : "";
-        saveMeal(request, response, Long.parseLong(mealId));
+        saveMeal(request, Long.parseLong(mealId));
         response.sendRedirect("meals");
     }
 
-    private void saveMeal(HttpServletRequest request, HttpServletResponse response, long mealId) {
+    private void saveMeal(HttpServletRequest request, long mealId) {
         String description = request.getParameter("description") != null ? request.getParameter("description") : "";
         String calories = request.getParameter("calories") != null ? request.getParameter("calories") : "";
         String dateTime = request.getParameter("dateTime") != null ? request.getParameter("dateTime") : "";
