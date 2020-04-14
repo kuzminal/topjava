@@ -1,20 +1,17 @@
-package ru.javawebinar.topjava.dao;
+package ru.javawebinar.topjava.repository;
 
 import ru.javawebinar.topjava.model.Meal;
-import ru.javawebinar.topjava.model.MealTo;
-import ru.javawebinar.topjava.util.MealsUtil;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.stream.Collectors;
 
-public class MealMemoryCrud implements MealDao {
+public class MealMemoryRepository implements MealRepository {
     private final ConcurrentMap<Long, Meal> mealStorage;
     private static final AtomicLong mealId = new AtomicLong();
 
-    public MealMemoryCrud() {
+    public MealMemoryRepository() {
         this.mealStorage = new ConcurrentHashMap<>();
     }
 

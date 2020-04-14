@@ -8,12 +8,11 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.Month;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 
 public class MealsUtil {
     private static final List<Meal> meals;
-    private static final int caloriesPerDay = 2000;
+    public static final int DEFAULT_CALORIES_PER_DAY = 2000;
 
     static {
         meals = Arrays.asList(
@@ -32,7 +31,7 @@ public class MealsUtil {
     }
 
     public static int getCaloriesPerDay() {
-        return caloriesPerDay;
+        return DEFAULT_CALORIES_PER_DAY;
     }
 
     public static void main(String[] args) {
