@@ -1,17 +1,18 @@
-package ru.javawebinar.topjava.repository;
+package ru.javawebinar.topjava.repository.inmemory;
 
 import ru.javawebinar.topjava.model.Meal;
+import ru.javawebinar.topjava.repository.MealRepository;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicLong;
 
-public class MealMemoryRepository implements MealRepository {
+public class InMemoryMealRepository implements MealRepository {
     private final ConcurrentMap<Long, Meal> mealStorage;
     private static final AtomicLong mealId = new AtomicLong();
 
-    public MealMemoryRepository() {
+    public InMemoryMealRepository() {
         this.mealStorage = new ConcurrentHashMap<>();
     }
 
