@@ -6,8 +6,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.service.MealService;
+import ru.javawebinar.topjava.to.MealTo;
 
 import java.util.List;
+
+import static ru.javawebinar.topjava.web.SecurityUtil.authUserId;
 
 @Controller
 public class MealRestController {
@@ -19,29 +22,29 @@ public class MealRestController {
         this.service = service;
     }
 
-    public List<Meal> getAll() {
+    public List<MealTo> getAll() {
         log.info("getAll");
         return service.getAll();
     }
 
-    public boolean delete(int id, int userId) {
+    public boolean delete(int id) {
         log.info("delete");
-        return service.delete(id);
+        return service.delete(id, authUserId());
     }
 
-    public Meal update(Meal meal) {
+    public MealTo update(Meal meal) {
         log.info("update");
-        return service.update(meal);
+        return service.update(meal, authUserId());
     }
 
-    public Meal save(Meal meal) {
+    public MealTo save(Meal meal) {
         log.info("save");
-        return service.create(meal);
+        return service.create(meal, authUserId());
     }
 
-    public Meal get(int id) {
+    public MealTo get(int id) {
         log.info("get");
-        return service.get(id);
+        return service.get(id, authUserId());
     }
 
 

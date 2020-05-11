@@ -29,9 +29,6 @@ public class MealServlet extends HttpServlet {
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
         storage = new InMemoryMealRepository();
-        MealsUtil.getMeals().forEach(meal -> {
-            storage.save(meal);
-        });
     }
 
     @Override
@@ -41,7 +38,9 @@ public class MealServlet extends HttpServlet {
         log.debug("Action = " + action + " mealId = " + mealId);
         switch (action) {
             case "delete":
-                storage.delete(Integer.parseInt(mealId));
+                if (!mealId.equals("")) {
+                    storage.delete(Integer.parseInt(mealId));
+                }
                 response.sendRedirect("meals");
                 return;
             case "edit":

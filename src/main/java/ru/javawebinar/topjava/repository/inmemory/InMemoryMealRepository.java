@@ -25,14 +25,12 @@ public class InMemoryMealRepository implements MealRepository {
         if (meal.getId() == 0 || meal.getId() == null) {
             meal.setId(generateUUID());
         }
-        mealStorage.put(meal.getId(), meal);
-        return meal;
+        return mealStorage.put(meal.getId(), meal);
     }
 
     @Override
     public boolean delete(int mealId) {
-        mealStorage.remove(mealId);
-        return true;
+        return mealStorage.remove(mealId, getById(mealId));
     }
 
     @Override
@@ -44,7 +42,7 @@ public class InMemoryMealRepository implements MealRepository {
 
     @Override
     public Meal getById(int mealId) {
-        return mealStorage.get(mealId);
+        return mealStorage.getOrDefault(mealId, null);
     }
 
     public int generateUUID() {
