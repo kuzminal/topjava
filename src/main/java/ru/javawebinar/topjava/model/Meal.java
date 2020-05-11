@@ -1,23 +1,22 @@
 package ru.javawebinar.topjava.model;
 
-import ru.javawebinar.topjava.util.MealsUtil;
-
 import java.time.LocalDateTime;
-import java.util.Random;
-import java.util.UUID;
 
-public class Meal {
-    private long id;
+public class Meal extends AbstractBaseEntity {
+    private int id;
     private LocalDateTime dateTime;
+    private int userId;
 
     private String description;
 
     private int calories;
 
-    public Meal(LocalDateTime dateTime, String description, int calories) {
+    public Meal(LocalDateTime dateTime, String description, int calories, int userId) {
+        super(0);
         this.dateTime = dateTime;
         this.description = description;
         this.calories = calories;
+        this.userId = userId;
     }
 
     public LocalDateTime getDateTime() {
@@ -32,11 +31,19 @@ public class Meal {
         return calories;
     }
 
-    public long getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(int id) {
         this.id = id;
+    }
+
+    public int getUserId() {
+        return userId;
+    }
+
+    public void setUserId(int userId) {
+        this.userId = userId;
     }
 }

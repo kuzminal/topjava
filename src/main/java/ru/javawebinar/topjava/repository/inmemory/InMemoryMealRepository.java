@@ -2,46 +2,59 @@ package ru.javawebinar.topjava.repository.inmemory;
 
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.repository.MealRepository;
+import ru.javawebinar.topjava.web.SecurityUtil;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
-import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Collectors;
 
 public class InMemoryMealRepository implements MealRepository {
-    private final ConcurrentMap<Long, Meal> mealStorage;
-    private static final AtomicLong mealId = new AtomicLong();
+    private final ConcurrentMap<Integer, Meal> mealStorage;
+    private static final AtomicInteger mealId = new AtomicInteger();
 
     public InMemoryMealRepository() {
         this.mealStorage = new ConcurrentHashMap<>();
     }
 
     @Override
-    public void save(Meal meal) {
-        long mealId = meal.getId();
-        if (mealId == 0 ) {
-            mealId = generateUUID();
-            meal.setId(mealId);
-        }
-        mealStorage.put(meal.getId(), meal);
+    public Meal save(Meal meal) {
+        if (meal.getUserId() == SecurityUtil.authUserId()) {
+            if (meal.getId() == 0 || meal.getId() == null) {
+                meal.setId(generateUUID());
+            }
+            mealStorage.put(meal.getId(), meal);
+            return meal;
+        } else return null;
     }
 
     @Override
-    public void delete(long mealId) {
-        mealStorage.remove(mealId);
+    public boolean delete(int mealId, int userId) {
+       Meal meal = getById(mealId, userId);
+       if (meal != null) {
+            mealStorage.remove(mealId);
+            return true;
+       } else return false;
     }
 
     @Override
-    public List<Meal> getAll() {
-        return new ArrayList<>(mealStorage.values());
+    public List<Meal> getAll(int userId) {
+        return mealStorage.values().stream()
+                .filter(meal -> meal.getUserId() == userId)
+                .sorted((meal1, meal2) -> meal2.getDateTime().compareTo(meal1.getDateTime()))
+                .collect(Collectors.toList());
     }
 
     @Override
-    public Meal getById(long mealId) {
-        return mealStorage.get(mealId);
+    public Meal getById(int mealId, int userId) {
+        Meal meal = mealStorage.get(mealId);
+        if (meal != null && meal.getUserId() == SecurityUtil.authUserId()) {
+            return mealStorage.get(mealId);
+        } else return null;
     }
 
-    public long generateUUID() {
+    public int generateUUID() {
         return mealId.incrementAndGet();
     }
 }

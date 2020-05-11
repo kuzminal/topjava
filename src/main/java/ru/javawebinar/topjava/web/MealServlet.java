@@ -4,7 +4,7 @@ import org.slf4j.Logger;
 import ru.javawebinar.topjava.repository.MealRepository;
 import ru.javawebinar.topjava.repository.inmemory.InMemoryMealRepository;
 import ru.javawebinar.topjava.model.Meal;
-import ru.javawebinar.topjava.model.MealTo;
+import ru.javawebinar.topjava.to.MealTo;
 import ru.javawebinar.topjava.util.MealsUtil;
 
 import javax.servlet.ServletConfig;
@@ -41,20 +41,20 @@ public class MealServlet extends HttpServlet {
         log.debug("Action = " + action + " mealId = " + mealId);
         switch (action) {
             case "delete":
-                storage.delete(Long.parseLong(mealId));
+                storage.delete(Integer.parseInt(mealId), SecurityUtil.authUserId());
                 response.sendRedirect("meals");
                 return;
             case "edit":
-                request.setAttribute("meal", storage.getById(Long.parseLong(mealId)));
+                request.setAttribute("meal", storage.getById(Integer.parseInt(mealId), SecurityUtil.authUserId()));
                 request.getRequestDispatcher("/mealsEdit.jsp").forward(request, response);
                 return;
             case "add":
-                Meal meal = new Meal(LocalDateTime.now(), "", 0);
+                Meal meal = new Meal(LocalDateTime.now(), "", 0, SecurityUtil.authUserId());
                 request.setAttribute("meal", meal);
                 request.getRequestDispatcher("/mealsEdit.jsp").forward(request, response);
                 return;
         }
-        List<MealTo> mealsTo = MealsUtil.filteredByStreams(storage.getAll(), LocalTime.MIN, LocalTime.MAX, MealsUtil.getCaloriesPerDay());
+        List<MealTo> mealsTo = MealsUtil.filteredByStreams(storage.getAll(SecurityUtil.authUserId()), LocalTime.MIN, LocalTime.MAX, MealsUtil.getCaloriesPerDay());
         mealsTo.sort(Comparator.comparing(MealTo::getDateTime));
         request.setAttribute("meals", mealsTo);
         request.getRequestDispatcher("/meals.jsp").forward(request, response);
@@ -64,16 +64,16 @@ public class MealServlet extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         request.setCharacterEncoding("UTF-8");
         String mealId = request.getParameter("mealId") != null ? request.getParameter("mealId") : "";
-        saveMeal(request, Long.parseLong(mealId));
+        saveMeal(request, Integer.parseInt(mealId));
         response.sendRedirect("meals");
     }
 
-    private void saveMeal(HttpServletRequest request, long mealId) {
+    private void saveMeal(HttpServletRequest request, int mealId) {
         String description = request.getParameter("description") != null ? request.getParameter("description") : "";
         String calories = request.getParameter("calories") != null ? request.getParameter("calories") : "";
         String dateTime = request.getParameter("dateTime") != null ? request.getParameter("dateTime") : "";
         if (description.trim().length() != 0 && calories.trim().length() != 0 && dateTime.trim().length() != 0) {
-            Meal meal = new Meal(LocalDateTime.parse(dateTime), description, Integer.parseInt(calories));
+            Meal meal = new Meal(LocalDateTime.parse(dateTime), description, Integer.parseInt(calories), SecurityUtil.authUserId());
             meal.setId(mealId);
             storage.save(meal);
         }
