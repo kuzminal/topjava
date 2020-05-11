@@ -41,11 +41,11 @@ public class MealServlet extends HttpServlet {
         log.debug("Action = " + action + " mealId = " + mealId);
         switch (action) {
             case "delete":
-                storage.delete(Integer.parseInt(mealId), SecurityUtil.authUserId());
+                storage.delete(Integer.parseInt(mealId));
                 response.sendRedirect("meals");
                 return;
             case "edit":
-                request.setAttribute("meal", storage.getById(Integer.parseInt(mealId), SecurityUtil.authUserId()));
+                request.setAttribute("meal", storage.getById(Integer.parseInt(mealId)));
                 request.getRequestDispatcher("/mealsEdit.jsp").forward(request, response);
                 return;
             case "add":

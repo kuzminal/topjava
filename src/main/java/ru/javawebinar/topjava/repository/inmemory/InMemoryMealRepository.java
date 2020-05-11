@@ -4,9 +4,6 @@ import org.springframework.stereotype.Repository;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.repository.MealRepository;
 import ru.javawebinar.topjava.util.MealsUtil;
-import ru.javawebinar.topjava.web.SecurityUtil;
-
-import java.time.LocalTime;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -25,22 +22,17 @@ public class InMemoryMealRepository implements MealRepository {
 
     @Override
     public Meal save(Meal meal) {
-        if (meal.getUserId() == SecurityUtil.authUserId()) {
-            if (meal.getId() == 0 || meal.getId() == null) {
-                meal.setId(generateUUID());
-            }
-            mealStorage.put(meal.getId(), meal);
-            return meal;
-        } else return null;
+        if (meal.getId() == 0 || meal.getId() == null) {
+            meal.setId(generateUUID());
+        }
+        mealStorage.put(meal.getId(), meal);
+        return meal;
     }
 
     @Override
-    public boolean delete(int mealId, int userId) {
-       Meal meal = getById(mealId, userId);
-       if (meal != null) {
-            mealStorage.remove(mealId);
-            return true;
-       } else return false;
+    public boolean delete(int mealId) {
+        mealStorage.remove(mealId);
+        return true;
     }
 
     @Override
@@ -51,11 +43,8 @@ public class InMemoryMealRepository implements MealRepository {
     }
 
     @Override
-    public Meal getById(int mealId, int userId) {
-        Meal meal = mealStorage.get(mealId);
-        if (meal != null && meal.getUserId() == SecurityUtil.authUserId()) {
-            return mealStorage.get(mealId);
-        } else return null;
+    public Meal getById(int mealId) {
+        return mealStorage.get(mealId);
     }
 
     public int generateUUID() {

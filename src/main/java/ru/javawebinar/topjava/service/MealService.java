@@ -5,10 +5,8 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.repository.MealRepository;
-
+import ru.javawebinar.topjava.web.SecurityUtil;
 import java.util.List;
-
-import static ru.javawebinar.topjava.util.ValidationUtil.checkNotFoundWithId;
 
 @Service
 public class MealService {
@@ -26,15 +24,23 @@ public class MealService {
     }
 
     public Meal create(Meal meal) {
-        return repository.save(meal);
+        if (meal != null && meal.getUserId() == SecurityUtil.authUserId()) {
+            repository.save(meal);
+            return meal;
+        } else return null;
     }
 
-    public boolean delete(int id, int userId) {
-        return repository.delete(id, userId);
+    public boolean delete(int id) {
+        if (get(id).getUserId() == SecurityUtil.authUserId()) {
+            return repository.delete(id);
+        } else return false;
     }
 
-    public Meal get(int id, int userId) {
-        return repository.getById(id, userId);
+    public Meal get(int id) {
+        Meal meal = repository.getById(id);
+        if (meal != null && meal.getUserId() == SecurityUtil.authUserId()) {
+            return meal;
+        } else return null;
     }
 
     public List<Meal> getAll() {
@@ -42,7 +48,9 @@ public class MealService {
     }
 
     public Meal update(Meal meal) {
-        return repository.save(meal);
+        if (meal != null && meal.getUserId() == SecurityUtil.authUserId()) {
+            return repository.save(meal);
+        } else return null;
     }
 
 }
