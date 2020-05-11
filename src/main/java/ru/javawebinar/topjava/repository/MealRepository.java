@@ -8,6 +8,6 @@ import java.util.List;
 public interface MealRepository {
     Meal save(Meal meal);
     boolean delete(int mealId, int userId);
-    List<Meal> getAll(int userId);
+    List<Meal> getAll();
     Meal getById(int mealId, int userId);
 }
