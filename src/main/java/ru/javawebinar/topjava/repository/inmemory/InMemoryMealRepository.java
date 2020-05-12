@@ -3,7 +3,8 @@ package ru.javawebinar.topjava.repository.inmemory;
 import org.springframework.stereotype.Repository;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.repository.MealRepository;
-import ru.javawebinar.topjava.util.MealsUtil;
+import ru.javawebinar.topjava.web.SecurityUtil;
+
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
@@ -17,20 +18,34 @@ public class InMemoryMealRepository implements MealRepository {
 
     public InMemoryMealRepository() {
         this.mealStorage = new ConcurrentHashMap<>();
-        MealsUtil.getMeals().forEach(this::save);
     }
 
     @Override
-    public Meal save(Meal meal) {
+    public Meal save(Meal meal, int userId) {
         if (meal.getId() == 0 || meal.getId() == null) {
             meal.setId(generateUUID());
+            return mealStorage.put(meal.getId(), meal);
+        } else {
+            Meal storedMeal = mealStorage.get(meal.getId());
+            if (storedMeal == null) {
+                return null;
+            } else if (storedMeal.getUserId() == userId) {
+                return mealStorage.put(meal.getId(), meal);
+            } else return null;
         }
-        return mealStorage.put(meal.getId(), meal);
     }
 
     @Override
-    public boolean delete(int mealId) {
-        return mealStorage.remove(mealId, getById(mealId));
+    public boolean delete(int mealId, int userId) {
+        Meal storedMeal = mealStorage.get(mealId);
+        if (storedMeal == null) {
+            return false;
+        } else if (storedMeal.getUserId() == userId) {
+            Meal meal = mealStorage.remove(mealId);
+            if (meal == storedMeal) {
+                return true;
+            } else return false;
+        } else return false;
     }
 
     @Override
@@ -41,8 +56,13 @@ public class InMemoryMealRepository implements MealRepository {
     }
 
     @Override
-    public Meal getById(int mealId) {
-        return mealStorage.getOrDefault(mealId, null);
+    public Meal getById(int mealId, int userId) {
+        Meal storedMeal = mealStorage.get(mealId);
+        if (storedMeal == null) {
+            return null;
+        } else if (storedMeal.getUserId() == userId) {
+            return mealStorage.get(mealId);
+        } else return null;
     }
 
     public int generateUUID() {

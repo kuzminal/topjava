@@ -30,20 +30,20 @@ public class MealService {
 
     public MealTo create(Meal meal, int userId) {
         if (meal != null && meal.getUserId() == userId) {
-            repository.save(meal);
+            repository.save(meal, userId);
             return convert(meal);
         } else throw new NotFoundException("Not found entity with id=" + meal.getId());
     }
 
     public boolean delete(int id, int userId) {
         // два обращения к репозиторию пока не придумал как убрать
-        if (repository.getById(id).getUserId() == userId) {
-            return repository.delete(id);
+        if (repository.getById(id, userId).getUserId() == userId) {
+            return repository.delete(id, userId);
         } else throw new NotFoundException("Not found entity with id=" + id);
     }
 
     public MealTo get(int id, int userId) {
-        Meal meal = repository.getById(id);
+        Meal meal = repository.getById(id, userId);
         if (meal != null && meal.getUserId() == userId) {
             return convert(meal);
         } else throw new NotFoundException("Not found entity with id=" + id);
@@ -55,7 +55,7 @@ public class MealService {
 
     public MealTo update(Meal meal, int userId) {
         if (meal != null && meal.getUserId() == userId) {
-            return convert(repository.save(meal));
+            return convert(repository.save(meal, userId));
         } else throw new NotFoundException("Not found entity with id=" + meal.getId());
     }
 

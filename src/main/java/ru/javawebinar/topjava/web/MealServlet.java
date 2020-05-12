@@ -29,6 +29,9 @@ public class MealServlet extends HttpServlet {
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
         storage = new InMemoryMealRepository();
+        MealsUtil.getMeals().forEach(meal -> {
+            storage.save(meal, SecurityUtil.authUserId());
+        });
     }
 
     @Override
@@ -39,12 +42,12 @@ public class MealServlet extends HttpServlet {
         switch (action) {
             case "delete":
                 if (!mealId.equals("")) {
-                    storage.delete(Integer.parseInt(mealId));
+                    storage.delete(Integer.parseInt(mealId), SecurityUtil.authUserId());
                 }
                 response.sendRedirect("meals");
                 return;
             case "edit":
-                request.setAttribute("meal", storage.getById(Integer.parseInt(mealId)));
+                request.setAttribute("meal", storage.getById(Integer.parseInt(mealId), SecurityUtil.authUserId()));
                 request.getRequestDispatcher("/mealsEdit.jsp").forward(request, response);
                 return;
             case "add":
@@ -74,7 +77,7 @@ public class MealServlet extends HttpServlet {
         if (description.trim().length() != 0 && calories.trim().length() != 0 && dateTime.trim().length() != 0) {
             Meal meal = new Meal(LocalDateTime.parse(dateTime), description, Integer.parseInt(calories), SecurityUtil.authUserId());
             meal.setId(mealId);
-            storage.save(meal);
+            storage.save(meal, SecurityUtil.authUserId());
         }
     }
 }

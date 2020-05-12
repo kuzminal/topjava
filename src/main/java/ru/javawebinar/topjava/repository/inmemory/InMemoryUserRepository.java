@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 import ru.javawebinar.topjava.model.AbstractNamedEntity;
+import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.repository.UserRepository;
 
@@ -20,7 +21,7 @@ import java.util.stream.Collectors;
 public class InMemoryUserRepository implements UserRepository {
     private static final Logger log = LoggerFactory.getLogger(InMemoryUserRepository.class);
     private final ConcurrentMap<Integer, User> userStorage;
-    private static final AtomicInteger userId = new AtomicInteger();
+    private final AtomicInteger userId = new AtomicInteger();
 
     public InMemoryUserRepository() {
         this.userStorage = new ConcurrentHashMap<>();
@@ -29,32 +30,32 @@ public class InMemoryUserRepository implements UserRepository {
     @Override
     public boolean delete(int id) {
         log.info("delete {}", id);
-        userStorage.remove(id);
-        return true;
+        User storedUser = userStorage.remove(id);
+        if (storedUser != null) {
+            return true;
+        } else return false;
     }
 
     @Override
     public User save(User user) {
         log.info("save {}", user);
         if (user.getId() == null) {
-             user.setId(userId.incrementAndGet());
+            user.setId(userId.incrementAndGet());
         }
-        userStorage.putIfAbsent(user.getId(), user);
-        return user;
+        return userStorage.put(user.getId(), user);
     }
 
     @Override
     public User get(int id) {
         log.info("get {}", id);
-        userStorage.get(id);
-        return null;
+        return userStorage.get(id);
     }
 
     @Override
     public List<User> getAll() {
         log.info("getAll");
         return userStorage.values().stream()
-                .sorted(Comparator.comparing(AbstractNamedEntity::getName))
+                .sorted(this::compareForSorting)
                 .collect(Collectors.toList());
     }
 
@@ -63,6 +64,18 @@ public class InMemoryUserRepository implements UserRepository {
         log.info("getByEmail {}", email);
         return userStorage.values().stream()
                 .filter(user -> user.getEmail().equals(email))
-                .findFirst().get();
+                .findFirst().orElse(null);
+    }
+
+    private int compareForSorting(User user1, User user2) {
+        String x1 = user1.getName();
+        String x2 = user2.getName();
+        int sComp = x1.compareTo(x2);
+        if (sComp != 0) {
+            return sComp;
+        }
+        String y1 = user1.getEmail();
+        String y2 = user2.getEmail();
+        return y1.compareTo(y2);
     }
 }
