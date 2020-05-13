@@ -3,6 +3,7 @@ package ru.javawebinar.topjava.repository.inmemory;
 import org.springframework.stereotype.Repository;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.repository.MealRepository;
+import ru.javawebinar.topjava.util.MealsUtil;
 import ru.javawebinar.topjava.web.SecurityUtil;
 
 import java.util.*;
@@ -18,11 +19,14 @@ public class InMemoryMealRepository implements MealRepository {
 
     public InMemoryMealRepository() {
         this.mealStorage = new ConcurrentHashMap<>();
+        MealsUtil.getMeals().forEach(meal -> {
+            save(meal, 1);
+        });
     }
 
     @Override
     public Meal save(Meal meal, int userId) {
-        if (meal.getId() == 0 || meal.getId() == null) {
+        if (meal.isNew()) {
             meal.setId(generateUUID());
             return mealStorage.put(meal.getId(), meal);
         } else {

@@ -29,9 +29,6 @@ public class MealServlet extends HttpServlet {
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
         storage = new InMemoryMealRepository();
-        MealsUtil.getMeals().forEach(meal -> {
-            storage.save(meal, SecurityUtil.authUserId());
-        });
     }
 
     @Override
@@ -51,7 +48,7 @@ public class MealServlet extends HttpServlet {
                 request.getRequestDispatcher("/mealsEdit.jsp").forward(request, response);
                 return;
             case "add":
-                Meal meal = new Meal(LocalDateTime.now(), "", 0, SecurityUtil.authUserId());
+                Meal meal = new Meal(null, LocalDateTime.now(), "", 0, SecurityUtil.authUserId());
                 request.setAttribute("meal", meal);
                 request.getRequestDispatcher("/mealsEdit.jsp").forward(request, response);
                 return;
@@ -65,18 +62,21 @@ public class MealServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         request.setCharacterEncoding("UTF-8");
-        String mealId = request.getParameter("mealId") != null ? request.getParameter("mealId") : "";
-        saveMeal(request, Integer.parseInt(mealId));
+        String mealIdStr = request.getParameter("mealId") != null ? request.getParameter("mealId") : "";
+        Integer mealId;
+        if (mealIdStr != "") {
+            mealId = Integer.parseInt(mealIdStr);
+        } else mealId = null;
+        saveMeal(request, mealId);
         response.sendRedirect("meals");
     }
 
-    private void saveMeal(HttpServletRequest request, int mealId) {
+    private void saveMeal(HttpServletRequest request, Integer mealId) {
         String description = request.getParameter("description") != null ? request.getParameter("description") : "";
         String calories = request.getParameter("calories") != null ? request.getParameter("calories") : "";
         String dateTime = request.getParameter("dateTime") != null ? request.getParameter("dateTime") : "";
         if (description.trim().length() != 0 && calories.trim().length() != 0 && dateTime.trim().length() != 0) {
-            Meal meal = new Meal(LocalDateTime.parse(dateTime), description, Integer.parseInt(calories), SecurityUtil.authUserId());
-            meal.setId(mealId);
+            Meal meal = new Meal(mealId, LocalDateTime.parse(dateTime), description, Integer.parseInt(calories), SecurityUtil.authUserId());
             storage.save(meal, SecurityUtil.authUserId());
         }
     }

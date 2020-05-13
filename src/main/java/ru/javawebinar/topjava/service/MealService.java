@@ -13,6 +13,8 @@ import ru.javawebinar.topjava.web.SecurityUtil;
 import java.time.LocalTime;
 import java.util.List;
 
+import static ru.javawebinar.topjava.util.ValidationUtil.checkNotFoundWithId;
+
 @Service
 public class MealService {
 
@@ -28,43 +30,23 @@ public class MealService {
         this.repository = repository;
     }
 
-    public MealTo create(Meal meal, int userId) {
-        if (meal != null && meal.getUserId() == userId) {
-            repository.save(meal, userId);
-            return convert(meal);
-        } else throw new NotFoundException("Not found entity with id=" + meal.getId());
+    public Meal create(Meal meal, int userId) {
+        return repository.save(meal, userId);
     }
 
-    public boolean delete(int id, int userId) {
-        // два обращения к репозиторию пока не придумал как убрать
-        if (repository.getById(id, userId).getUserId() == userId) {
-            return repository.delete(id, userId);
-        } else throw new NotFoundException("Not found entity with id=" + id);
+    public void delete(int id, int userId) {
+        checkNotFoundWithId(repository.delete(id, userId), id);
     }
 
-    public MealTo get(int id, int userId) {
-        Meal meal = repository.getById(id, userId);
-        if (meal != null && meal.getUserId() == userId) {
-            return convert(meal);
-        } else throw new NotFoundException("Not found entity with id=" + id);
+    public Meal get(int id, int userId) {
+        return checkNotFoundWithId(repository.getById(id, userId), id);
     }
 
     public List<MealTo> getAll() {
         return MealsUtil.filteredByStreams(repository.getAll(), LocalTime.MIN, LocalTime.MAX, SecurityUtil.authUserCaloriesPerDay());
     }
 
-    public MealTo update(Meal meal, int userId) {
-        if (meal != null && meal.getUserId() == userId) {
-            return convert(repository.save(meal, userId));
-        } else throw new NotFoundException("Not found entity with id=" + meal.getId());
+    public void update(Meal meal, int userId) {
+        checkNotFoundWithId(repository.save(meal, userId), meal.getId());
     }
-
-    private MealTo convert(Meal meal) {
-        List<MealTo> mealsTo = MealsUtil.filteredByStreams(repository.getAll(), LocalTime.MIN, LocalTime.MAX, SecurityUtil.authUserCaloriesPerDay());
-        return mealsTo.stream()
-                .filter(m -> m.getId() == meal.getId())
-                .findFirst()
-                .orElseThrow(() -> new NotFoundException("Not found entity with id=" + meal.getId()));
-    }
-
 }

@@ -7,9 +7,12 @@ import org.springframework.stereotype.Controller;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.service.MealService;
 import ru.javawebinar.topjava.to.MealTo;
+import ru.javawebinar.topjava.web.user.AbstractUserController;
 
 import java.util.List;
 
+import static ru.javawebinar.topjava.util.ValidationUtil.assureIdConsistent;
+import static ru.javawebinar.topjava.util.ValidationUtil.checkNew;
 import static ru.javawebinar.topjava.web.SecurityUtil.authUserId;
 
 @Controller
@@ -27,22 +30,24 @@ public class MealRestController {
         return service.getAll();
     }
 
-    public boolean delete(int id) {
+    public void delete(int id) {
         log.info("delete");
-        return service.delete(id, authUserId());
+        service.delete(id, authUserId());
     }
 
-    public MealTo update(Meal meal) {
+    public void update(Meal meal, int id) {
         log.info("update");
-        return service.update(meal, authUserId());
+        assureIdConsistent(meal, id);
+        service.update(meal, authUserId());
     }
 
-    public MealTo save(Meal meal) {
+    public Meal save(Meal meal) {
         log.info("save");
+        checkNew(meal);
         return service.create(meal, authUserId());
     }
 
-    public MealTo get(int id) {
+    public Meal get(int id) {
         log.info("get");
         return service.get(id, authUserId());
     }
