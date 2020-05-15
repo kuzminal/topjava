@@ -35,6 +35,7 @@ public class InMemoryMealRepository implements MealRepository {
             if (storedMeal == null) {
                 return null;
             } else if (storedMeal.getUserId() == userId) {
+                meal.setUserId(userId);
                 return mealStorage.put(meal.getId(), meal);
             } else return null;
         }

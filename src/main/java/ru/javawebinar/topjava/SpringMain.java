@@ -28,8 +28,8 @@ public class SpringMain {
             //adminUserController.getByMail("1email@mail.ru1");
             MealRestController mealRestController = appCtx.getBean(MealRestController.class);
             List<MealTo> meals = mealRestController.getAll();
-            Meal meal1 = new Meal(null, LocalDateTime.of(2020, Month.MAY, 12, 10, 0), "Завтрак", 180, 1);
-            Meal meal2 = new Meal(null, LocalDateTime.of(2020, Month.MAY, 12, 10, 0), "Завтрак", 180, 2);
+            Meal meal1 = new Meal(null, LocalDateTime.of(2020, Month.MAY, 12, 10, 0), "Завтрак", 180);
+            Meal meal2 = new Meal(null, LocalDateTime.of(2020, Month.MAY, 12, 10, 0), "Завтрак", 180);
             mealRestController.getAll();
             mealRestController.delete(2);
             //mealRestController.delete(8);

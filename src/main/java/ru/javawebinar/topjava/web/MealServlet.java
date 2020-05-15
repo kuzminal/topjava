@@ -1,11 +1,11 @@
 package ru.javawebinar.topjava.web;
 
 import org.slf4j.Logger;
-import ru.javawebinar.topjava.repository.MealRepository;
-import ru.javawebinar.topjava.repository.inmemory.InMemoryMealRepository;
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.to.MealTo;
-import ru.javawebinar.topjava.util.MealsUtil;
+import ru.javawebinar.topjava.web.meal.MealRestController;
 
 import javax.servlet.ServletConfig;
 import javax.servlet.ServletException;
@@ -14,8 +14,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.util.Comparator;
 import java.util.List;
 
 import static org.slf4j.LoggerFactory.getLogger;
@@ -23,12 +21,14 @@ import static org.slf4j.LoggerFactory.getLogger;
 public class MealServlet extends HttpServlet {
     private static final Logger log = getLogger(UserServlet.class);
 
-    private MealRepository storage;
+    private MealRestController mealRestController;
 
     @Override
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
-        storage = new InMemoryMealRepository();
+        try (ConfigurableApplicationContext appCtx = new ClassPathXmlApplicationContext("spring/spring-app.xml")) {
+            mealRestController = appCtx.getBean(MealRestController.class);
+        }
     }
 
     @Override
@@ -39,21 +39,21 @@ public class MealServlet extends HttpServlet {
         switch (action) {
             case "delete":
                 if (!mealId.equals("")) {
-                    storage.delete(Integer.parseInt(mealId), SecurityUtil.authUserId());
+                    mealRestController.delete(Integer.parseInt(mealId));
                 }
                 response.sendRedirect("meals");
                 return;
             case "edit":
-                request.setAttribute("meal", storage.getById(Integer.parseInt(mealId), SecurityUtil.authUserId()));
+                request.setAttribute("meal", mealRestController.get(Integer.parseInt(mealId)));
                 request.getRequestDispatcher("/mealsEdit.jsp").forward(request, response);
                 return;
             case "add":
-                Meal meal = new Meal(null, LocalDateTime.now(), "", 0, SecurityUtil.authUserId());
+                Meal meal = new Meal(null, LocalDateTime.now(), "", 0);
                 request.setAttribute("meal", meal);
                 request.getRequestDispatcher("/mealsEdit.jsp").forward(request, response);
                 return;
         }
-        List<MealTo> mealsTo = MealsUtil.filteredByStreams(storage.getAll(SecurityUtil.authUserId()), LocalTime.MIN, LocalTime.MAX, MealsUtil.getCaloriesPerDay());
+        List<MealTo> mealsTo = mealRestController.getAll();
         request.setAttribute("meals", mealsTo);
         request.getRequestDispatcher("/meals.jsp").forward(request, response);
     }
@@ -75,8 +75,10 @@ public class MealServlet extends HttpServlet {
         String calories = request.getParameter("calories") != null ? request.getParameter("calories") : "";
         String dateTime = request.getParameter("dateTime") != null ? request.getParameter("dateTime") : "";
         if (description.trim().length() != 0 && calories.trim().length() != 0 && dateTime.trim().length() != 0) {
-            Meal meal = new Meal(mealId, LocalDateTime.parse(dateTime), description, Integer.parseInt(calories), null);
-            storage.save(meal, SecurityUtil.authUserId());
+            Meal meal = new Meal(mealId, LocalDateTime.parse(dateTime), description, Integer.parseInt(calories));
+            if (meal.isNew()) {
+                mealRestController.save(meal);
+            } else mealRestController.update(meal, mealId);
         }
     }
 }
