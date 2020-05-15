@@ -42,8 +42,8 @@ public class MealService {
         return checkNotFoundWithId(repository.getById(id, userId), id);
     }
 
-    public List<MealTo> getAll() {
-        return MealsUtil.filteredByStreams(repository.getAll(), LocalTime.MIN, LocalTime.MAX, SecurityUtil.authUserCaloriesPerDay());
+    public List<MealTo> getAll(int userId) {
+        return MealsUtil.filteredByStreams(repository.getAll(userId), LocalTime.MIN, LocalTime.MAX, SecurityUtil.authUserCaloriesPerDay());
     }
 
     public void update(Meal meal, int userId) {

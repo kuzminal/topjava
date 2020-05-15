@@ -53,8 +53,7 @@ public class MealServlet extends HttpServlet {
                 request.getRequestDispatcher("/mealsEdit.jsp").forward(request, response);
                 return;
         }
-        List<MealTo> mealsTo = MealsUtil.filteredByStreams(storage.getAll(), LocalTime.MIN, LocalTime.MAX, MealsUtil.getCaloriesPerDay());
-        mealsTo.sort(Comparator.comparing(MealTo::getDateTime));
+        List<MealTo> mealsTo = MealsUtil.filteredByStreams(storage.getAll(SecurityUtil.authUserId()), LocalTime.MIN, LocalTime.MAX, MealsUtil.getCaloriesPerDay());
         request.setAttribute("meals", mealsTo);
         request.getRequestDispatcher("/meals.jsp").forward(request, response);
     }
@@ -76,7 +75,7 @@ public class MealServlet extends HttpServlet {
         String calories = request.getParameter("calories") != null ? request.getParameter("calories") : "";
         String dateTime = request.getParameter("dateTime") != null ? request.getParameter("dateTime") : "";
         if (description.trim().length() != 0 && calories.trim().length() != 0 && dateTime.trim().length() != 0) {
-            Meal meal = new Meal(mealId, LocalDateTime.parse(dateTime), description, Integer.parseInt(calories), SecurityUtil.authUserId());
+            Meal meal = new Meal(mealId, LocalDateTime.parse(dateTime), description, Integer.parseInt(calories), null);
             storage.save(meal, SecurityUtil.authUserId());
         }
     }

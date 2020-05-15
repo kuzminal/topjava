@@ -15,6 +15,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Repository
@@ -30,8 +31,9 @@ public class InMemoryUserRepository implements UserRepository {
     @Override
     public boolean delete(int id) {
         log.info("delete {}", id);
-        User storedUser = userStorage.remove(id);
+        User storedUser = userStorage.get(id);
         if (storedUser != null) {
+            userStorage.remove(id);
             return true;
         } else return false;
     }
@@ -39,7 +41,8 @@ public class InMemoryUserRepository implements UserRepository {
     @Override
     public User save(User user) {
         log.info("save {}", user);
-        if (user.getId() == null) {
+        long userIdent = user.getId();
+        if (userIdent == 0) {
             user.setId(userId.incrementAndGet());
         }
         return userStorage.put(user.getId(), user);
@@ -55,7 +58,7 @@ public class InMemoryUserRepository implements UserRepository {
     public List<User> getAll() {
         log.info("getAll");
         return userStorage.values().stream()
-                .sorted(this::compareForSorting)
+                .sorted(Comparator.comparing(User::getName).thenComparing(User::getEmail))
                 .collect(Collectors.toList());
     }
 
@@ -65,17 +68,5 @@ public class InMemoryUserRepository implements UserRepository {
         return userStorage.values().stream()
                 .filter(user -> user.getEmail().equals(email))
                 .findFirst().orElse(null);
-    }
-
-    private int compareForSorting(User user1, User user2) {
-        String x1 = user1.getName();
-        String x2 = user2.getName();
-        int sComp = x1.compareTo(x2);
-        if (sComp != 0) {
-            return sComp;
-        }
-        String y1 = user1.getEmail();
-        String y2 = user2.getEmail();
-        return y1.compareTo(y2);
     }
 }

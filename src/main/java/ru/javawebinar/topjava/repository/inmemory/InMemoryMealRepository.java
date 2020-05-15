@@ -27,7 +27,8 @@ public class InMemoryMealRepository implements MealRepository {
     @Override
     public Meal save(Meal meal, int userId) {
         if (meal.isNew()) {
-            meal.setId(generateUUID());
+            meal.setId(mealId.incrementAndGet());
+            meal.setUserId(userId);
             return mealStorage.put(meal.getId(), meal);
         } else {
             Meal storedMeal = mealStorage.get(meal.getId());
@@ -42,19 +43,16 @@ public class InMemoryMealRepository implements MealRepository {
     @Override
     public boolean delete(int mealId, int userId) {
         Meal storedMeal = mealStorage.get(mealId);
-        if (storedMeal == null) {
-            return false;
-        } else if (storedMeal.getUserId() == userId) {
-            Meal meal = mealStorage.remove(mealId);
-            if (meal == storedMeal) {
-                return true;
-            } else return false;
+        if (storedMeal != null && storedMeal.getUserId() == userId) {
+            mealStorage.remove(mealId);
+            return true;
         } else return false;
     }
 
     @Override
-    public List<Meal> getAll() {
+    public List<Meal> getAll(int userId) {
         return mealStorage.values().stream()
+                .filter(meal -> meal.getUserId() == userId)
                 .sorted((meal1, meal2) -> meal2.getDateTime().compareTo(meal1.getDateTime()))
                 .collect(Collectors.toList());
     }
@@ -62,14 +60,8 @@ public class InMemoryMealRepository implements MealRepository {
     @Override
     public Meal getById(int mealId, int userId) {
         Meal storedMeal = mealStorage.get(mealId);
-        if (storedMeal == null) {
-            return null;
-        } else if (storedMeal.getUserId() == userId) {
+        if (storedMeal != null && storedMeal.getUserId() == userId) {
             return mealStorage.get(mealId);
         } else return null;
-    }
-
-    public int generateUUID() {
-        return mealId.incrementAndGet();
     }
 }
