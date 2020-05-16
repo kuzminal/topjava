@@ -3,12 +3,29 @@
     <meta charset="UTF-8">
     <title>Java Enterprise (Topjava)</title>
 </head>
-<body>
+<body onload="selected()">
 <h3>Проект <a href="https://github.com/JavaWebinar/topjava" target="_blank">Java Enterprise (Topjava)</a></h3>
+<p>
+<dl>
+    <dt>Пользователь</dt>
+    <dd>
+        <select id="userList" name="currentUser" onchange="selected()">
+            <option value="1">Иванов Иван</option>
+            <option value="2">Петров Петр</option>
+        </select>
+    </dd>
+</dl>
 <hr>
 <ul>
-    <li><a href="users">Users</a></li>
+    <li><a id="users" href="users" onload="selected()">Users</a></li>
     <li><a href="meals">Meals</a></li>
 </ul>
+<script type="text/javascript">
+     function selected() {
+         const e = document.getElementById("userList");
+         const strUser = e.options[e.selectedIndex].value;
+         document.getElementById("users").href="users?user=" + strUser;
+    }
+</script>
 </body>
 </html>
