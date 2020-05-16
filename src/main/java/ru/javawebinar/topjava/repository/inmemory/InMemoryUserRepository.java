@@ -45,7 +45,8 @@ public class InMemoryUserRepository implements UserRepository {
         if (userIdent == 0) {
             user.setId(userId.incrementAndGet());
         }
-        return userStorage.put(user.getId(), user);
+        userStorage.put(user.getId(), user);
+        return userStorage.get(user.getId());
     }
 
     @Override

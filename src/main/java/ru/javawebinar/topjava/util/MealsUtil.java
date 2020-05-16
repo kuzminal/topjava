@@ -69,4 +69,17 @@ public class MealsUtil {
                                 sumByDate.get(exceededMeal.getDateTime().toLocalDate()) > caloriesPerDay, exceededMeal.getId()))
                 .collect(Collectors.toList());
     }
+
+    public static List<MealTo> filteredByStreamsDate(List<Meal> meals, LocalTime startTime, LocalTime endTime, LocalDate startDate, LocalDate endDate, int caloriesPerDay) {
+        Map<LocalDate, Integer> sumByDate = meals.stream()
+                .collect(Collectors.groupingBy(meal ->
+                        meal.getDateTime().toLocalDate(), Collectors.summingInt(Meal::getCalories)));
+        return meals.stream()
+                .filter(meal -> TimeUtil.isBetweenDate(meal.getDateTime().toLocalDate(), startDate, endDate))
+                .filter(meal -> TimeUtil.isBetweenHalfOpen(meal.getDateTime().toLocalTime(), startTime, endTime))
+                .map(exceededMeal ->
+                        new MealTo(exceededMeal.getDateTime(), exceededMeal.getDescription(), exceededMeal.getCalories(),
+                                sumByDate.get(exceededMeal.getDateTime().toLocalDate()) > caloriesPerDay, exceededMeal.getId()))
+                .collect(Collectors.toList());
+    }
 }

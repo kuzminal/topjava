@@ -29,14 +29,16 @@ public class InMemoryMealRepository implements MealRepository {
         if (meal.isNew()) {
             meal.setId(mealId.incrementAndGet());
             meal.setUserId(userId);
-            return mealStorage.put(meal.getId(), meal);
+            mealStorage.put(meal.getId(), meal);
+            return mealStorage.get(meal.getId());
         } else {
             Meal storedMeal = mealStorage.get(meal.getId());
             if (storedMeal == null) {
                 return null;
             } else if (storedMeal.getUserId() == userId) {
                 meal.setUserId(userId);
-                return mealStorage.put(meal.getId(), meal);
+                mealStorage.put(meal.getId(), meal);
+                return mealStorage.get(meal.getId());
             } else return null;
         }
     }

@@ -8,7 +8,10 @@ import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.service.MealService;
 import ru.javawebinar.topjava.to.MealTo;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
+import java.util.Map;
 
 import static ru.javawebinar.topjava.util.ValidationUtil.assureIdConsistent;
 import static ru.javawebinar.topjava.util.ValidationUtil.checkNew;
@@ -51,5 +54,7 @@ public class MealRestController {
         return service.get(id, authUserId());
     }
 
-
+    public List<MealTo> filter(Map<String, String> filterPrams) {
+        return service.getAllFiltered(authUserId(), filterPrams);
+    }
 }

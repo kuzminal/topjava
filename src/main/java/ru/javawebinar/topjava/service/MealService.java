@@ -10,8 +10,10 @@ import ru.javawebinar.topjava.util.MealsUtil;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 import ru.javawebinar.topjava.web.SecurityUtil;
 
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.Map;
 
 import static ru.javawebinar.topjava.util.ValidationUtil.checkNotFoundWithId;
 
@@ -44,6 +46,14 @@ public class MealService {
 
     public List<MealTo> getAll(int userId) {
         return MealsUtil.filteredByStreams(repository.getAll(userId), LocalTime.MIN, LocalTime.MAX, SecurityUtil.authUserCaloriesPerDay());
+    }
+
+    public List<MealTo> getAllFiltered(int userId, Map<String, String> filterPrams) {
+        LocalDate startDate = filterPrams.get("startDate") != "" ? LocalDate.parse(filterPrams.get("startDate")) : LocalDate.MIN;
+        LocalDate endDate = filterPrams.get("dateEnd") != "" ? LocalDate.parse(filterPrams.get("dateEnd")) : LocalDate.MAX;
+        LocalTime startTime = filterPrams.get("timeStart") != "" ? LocalTime.parse(filterPrams.get("timeStart")) : LocalTime.MIN;
+        LocalTime endTime = filterPrams.get("timeEnd") != "" ? LocalTime.parse(filterPrams.get("timeEnd")) : LocalTime.MAX;
+        return MealsUtil.filteredByStreamsDate(repository.getAll(userId), startTime, endTime, startDate, endDate, SecurityUtil.authUserCaloriesPerDay());
     }
 
     public void update(Meal meal, int userId) {

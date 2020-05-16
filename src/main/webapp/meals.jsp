@@ -18,6 +18,23 @@
 <h3><a href="index.html">Home</a></h3>
 <hr>
 <section>
+    <form method="post" action="meals?action=filter" enctype="application/x-www-form-urlencoded">
+        <h3>Фильтр</h3>
+        <p>
+        <dl>
+            <dt>Даты</dt>
+            <dd><input type="date" name="dateStart" size="30"></dd>
+            <dd>- <input type="date" name="dateEnd" size="30"></dd>
+        </dl>
+        <dl>
+            <dt>Время</dt>
+            <dd><input type="time" name="timeStart" size="30"></dd>
+            <dd>- <input type="time" name="timeEnd" size="30"></dd>
+        </dl>
+        </p>
+        <br>
+        <button type="submit">Отфильтровать</button>
+    </form>
     <table>
         <tr class="tab_head">
             <th>Время</th>
