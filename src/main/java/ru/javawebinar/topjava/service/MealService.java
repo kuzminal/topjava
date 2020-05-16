@@ -53,7 +53,7 @@ public class MealService {
         LocalDate endDate = filterPrams.get("dateEnd") != "" ? LocalDate.parse(filterPrams.get("dateEnd")) : LocalDate.MAX;
         LocalTime startTime = filterPrams.get("timeStart") != "" ? LocalTime.parse(filterPrams.get("timeStart")) : LocalTime.MIN;
         LocalTime endTime = filterPrams.get("timeEnd") != "" ? LocalTime.parse(filterPrams.get("timeEnd")) : LocalTime.MAX;
-        return MealsUtil.filteredByStreamsDate(repository.getAll(userId), startTime, endTime, startDate, endDate, SecurityUtil.authUserCaloriesPerDay());
+        return MealsUtil.filteredByStreams(repository.getFiltered(userId, startDate, endDate), startTime, endTime, SecurityUtil.authUserCaloriesPerDay());
     }
 
     public void update(Meal meal, int userId) {

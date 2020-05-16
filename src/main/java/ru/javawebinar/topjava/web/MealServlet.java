@@ -24,7 +24,6 @@ public class MealServlet extends HttpServlet {
     private static final Logger log = getLogger(UserServlet.class);
 
     private MealRestController mealRestController;
-    private Map<String,String> filterParams;
 
     @Override
     public void init(ServletConfig config) throws ServletException {
@@ -32,13 +31,13 @@ public class MealServlet extends HttpServlet {
         try (ConfigurableApplicationContext appCtx = new ClassPathXmlApplicationContext("spring/spring-app.xml")) {
             mealRestController = appCtx.getBean(MealRestController.class);
         }
-        filterParams = new HashMap<>();
     }
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         String mealId = request.getParameter("mealId") != null ? request.getParameter("mealId") : "";
         String action = request.getParameter("action") != null ? request.getParameter("action") : "";
+        Map<String, String> filterParams = new HashMap<>();
         log.debug("Action = " + action + " mealId = " + mealId);
         switch (action) {
             case "delete":
@@ -56,9 +55,14 @@ public class MealServlet extends HttpServlet {
                 request.setAttribute("meal", meal);
                 request.getRequestDispatcher("/mealsEdit.jsp").forward(request, response);
                 return;
+            case "filter":
+                filterParams.put("startDate", request.getParameter("dateStart") != null ? request.getParameter("dateStart") : "");
+                filterParams.put("dateEnd", request.getParameter("dateEnd") != null ? request.getParameter("dateEnd") : "");
+                filterParams.put("timeStart", request.getParameter("timeStart") != null ? request.getParameter("timeStart") : "");
+                filterParams.put("timeEnd", request.getParameter("timeEnd") != null ? request.getParameter("timeEnd") : "");
         }
         List<MealTo> mealsTo;
-        if (filterParams.size() > 0) {
+        if (filterParams.size() >0) {
             mealsTo = mealRestController.filter(filterParams);
         } else {
             mealsTo = mealRestController.getAll();
@@ -78,17 +82,15 @@ public class MealServlet extends HttpServlet {
         String et = request.getParameter("timeEnd") != null ? request.getParameter("timeEnd") : "";
         Integer mealId;
         if (!postAction.equals("filter")) {
-            if (mealIdStr != "") {
+            if (!mealIdStr.equals("")) {
                 mealId = Integer.parseInt(mealIdStr);
             } else mealId = null;
             saveMeal(request, mealId);
+            response.sendRedirect("meals");
         } else {
-            filterParams.put("startDate", sd);
-            filterParams.put("dateEnd", ed);
-            filterParams.put("timeStart", st);
-            filterParams.put("timeEnd", et);
+            response.sendRedirect("meals?action=filter&startDate=" + sd + "&dateEnd=" + ed + "&timeStart=" + st + "&timeEnd=" + et);
         }
-        response.sendRedirect("meals");
+
     }
 
     private void saveMeal(HttpServletRequest request, Integer mealId) {
