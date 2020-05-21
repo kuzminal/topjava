@@ -4,7 +4,7 @@ import org.slf4j.Logger;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 import ru.javawebinar.topjava.model.Meal;
-import ru.javawebinar.topjava.to.MealTo;
+import ru.javawebinar.topjava.util.DateTimeUtil;
 import ru.javawebinar.topjava.web.meal.MealRestController;
 
 import javax.servlet.ServletConfig;
@@ -13,9 +13,10 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import static org.slf4j.LoggerFactory.getLogger;
@@ -56,41 +57,30 @@ public class MealServlet extends HttpServlet {
                 request.getRequestDispatcher("/mealsEdit.jsp").forward(request, response);
                 return;
             case "filter":
-                filterParams.put("startDate", request.getParameter("dateStart") != null ? request.getParameter("dateStart") : "");
-                filterParams.put("dateEnd", request.getParameter("dateEnd") != null ? request.getParameter("dateEnd") : "");
-                filterParams.put("timeStart", request.getParameter("timeStart") != null ? request.getParameter("timeStart") : "");
-                filterParams.put("timeEnd", request.getParameter("timeEnd") != null ? request.getParameter("timeEnd") : "");
+                LocalTime startTime = DateTimeUtil.parseLocalTime(request.getParameter("timeStart"));
+                LocalTime endTime = DateTimeUtil.parseLocalTime(request.getParameter("timeEnd"));
+                LocalDate startDate = DateTimeUtil.parseLocalDate(request.getParameter("dateStart"));
+                LocalDate endDate = DateTimeUtil.parseLocalDate(request.getParameter("dateEnd"));
+                request.setAttribute("meals", mealRestController.getBetweenHalfOpen(startDate, startTime, endDate, endTime));
+                request.getRequestDispatcher("/meals.jsp").forward(request, response);
+                break;
+            default:
+                request.setAttribute("meals", mealRestController.getAll());
+                request.getRequestDispatcher("/meals.jsp").forward(request, response);
+                break;
         }
-        List<MealTo> mealsTo;
-        if (filterParams.size() >0) {
-            mealsTo = mealRestController.filter(filterParams);
-        } else {
-            mealsTo = mealRestController.getAll();
-        }
-        request.setAttribute("meals", mealsTo);
-        request.getRequestDispatcher("/meals.jsp").forward(request, response);
     }
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         request.setCharacterEncoding("UTF-8");
-        String postAction = request.getParameter("action") != null ? request.getParameter("action") : "";
         String mealIdStr = request.getParameter("mealId") != null ? request.getParameter("mealId") : "";
-        String sd = request.getParameter("dateStart") != null ? request.getParameter("dateStart") : "";
-        String ed = request.getParameter("dateEnd") != null ? request.getParameter("dateEnd") : "";
-        String st = request.getParameter("timeStart") != null ? request.getParameter("timeStart") : "";
-        String et = request.getParameter("timeEnd") != null ? request.getParameter("timeEnd") : "";
         Integer mealId;
-        if (!postAction.equals("filter")) {
-            if (!mealIdStr.equals("")) {
-                mealId = Integer.parseInt(mealIdStr);
-            } else mealId = null;
-            saveMeal(request, mealId);
-            response.sendRedirect("meals");
-        } else {
-            response.sendRedirect("meals?action=filter&startDate=" + sd + "&dateEnd=" + ed + "&timeStart=" + st + "&timeEnd=" + et);
-        }
-
+        if (!mealIdStr.equals("")) {
+            mealId = Integer.parseInt(mealIdStr);
+        } else mealId = null;
+        saveMeal(request, mealId);
+        response.sendRedirect("meals");
     }
 
     private void saveMeal(HttpServletRequest request, Integer mealId) {
@@ -108,5 +98,6 @@ public class MealServlet extends HttpServlet {
     @Override
     public void destroy() {
         appCtx.close();
+        super.destroy();
     }
 }

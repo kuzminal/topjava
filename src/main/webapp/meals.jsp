@@ -18,18 +18,19 @@
 <h3><a href="index.html">Home</a></h3>
 <hr>
 <section>
-    <form method="post" action="meals?action=filter" enctype="application/x-www-form-urlencoded">
+    <form method="get" action="meals">
+        <input type="hidden" name="action" value="filter">
         <h3>Фильтр</h3>
         <p>
         <dl>
             <dt>Даты</dt>
-            <dd><input type="date" name="dateStart" size="30"></dd>
-            <dd>- <input type="date" name="dateEnd" size="30"></dd>
+            <dd><input type="date" name="dateStart" size="30" value="${param.dateStart}"></dd>
+            <dd>- <input type="date" name="dateEnd" size="30" value="${param.dateEnd}"></dd>
         </dl>
         <dl>
             <dt>Время</dt>
-            <dd><input type="time" name="timeStart" size="30"></dd>
-            <dd>- <input type="time" name="timeEnd" size="30"></dd>
+            <dd><input type="time" name="timeStart" size="30" value="${param.timeStart}"></dd>
+            <dd>- <input type="time" name="timeEnd" size="30" value="${param.timeEnd}"></dd>
         </dl>
         </p>
         <br>
@@ -45,7 +46,7 @@
         </tr>
         <c:forEach items="${meals}" var="mealTo">
             <jsp:useBean id="mealTo" type="ru.javawebinar.topjava.to.MealTo"/>
-            <tr <%= mealTo.isExcess() ? "style=\"color: red\"" : "style=\"color: green\"" %>>
+            <tr data-mealExcess = ${mealTo.excess}>
                 <td><fmt:parseDate value="${ mealTo.dateTime }" pattern="yyyy-MM-dd'T'HH:mm" var="parsedDateTime"
                                    type="both"/>
                     <fmt:formatDate pattern="dd.MM.yyyy HH:mm" value="${ parsedDateTime }"/></td>

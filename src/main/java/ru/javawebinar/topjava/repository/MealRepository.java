@@ -1,16 +1,13 @@
 package ru.javawebinar.topjava.repository;
 
 import ru.javawebinar.topjava.model.Meal;
-import ru.javawebinar.topjava.model.User;
-
-import java.time.LocalDate;
-import java.time.LocalTime;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface MealRepository {
     Meal save(Meal meal, int userId);
     boolean delete(int mealId, int userId);
     List<Meal> getAll(int userId);
-    List<Meal> getFiltered(int userId, LocalDate startDate, LocalDate endDate);
+    List<Meal> getBetweenHalfOpen(LocalDateTime startDate, LocalDateTime endDate, int userId);
     Meal getById(int mealId, int userId);
 }
