@@ -1,5 +1,6 @@
 package ru.javawebinar.topjava.util;
 
+import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.to.MealTo;
 
@@ -38,7 +39,6 @@ public class MealsUtil {
     public static void main(String[] args) {
         List<MealTo> mealsTo = filteredByCycles(meals, LocalTime.of(7, 0), LocalTime.of(12, 0), 2000);
         mealsTo.forEach(System.out::println);
-
 //        System.out.println(filteredByStreams(meals, LocalTime.of(7, 0), LocalTime.of(12, 0), 2000));
     }
 
@@ -73,5 +73,9 @@ public class MealsUtil {
 
     public static List<MealTo> getFilteredTos(Collection<Meal> meals, int caloriesPerDay, LocalTime startTime, LocalTime endTime) {
         return filteredByStreams(meals, meal -> Util.isBetweenHalfOpen(meal.getDateTime().toLocalTime(), startTime, endTime), caloriesPerDay);
+    }
+
+    public static List<MealTo> getTos(Collection<Meal> meals, int caloriesPerDay) {
+        return filteredByStreams(meals, meal -> true, caloriesPerDay);
     }
 }
