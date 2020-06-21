@@ -4,6 +4,7 @@ DROP TABLE IF EXISTS users;
 DROP SEQUENCE IF EXISTS global_seq;
 
 CREATE SEQUENCE global_seq START WITH 100000;
+GRANT ALL PRIVILEGES ON global_seq TO "user";
 
 CREATE TABLE users
 (
@@ -16,6 +17,7 @@ CREATE TABLE users
   calories_per_day INTEGER DEFAULT 2000    NOT NULL
 );
 CREATE UNIQUE INDEX users_unique_email_idx ON users (email);
+GRANT ALL PRIVILEGES ON users TO "user";
 
 CREATE TABLE user_roles
 (
@@ -24,6 +26,7 @@ CREATE TABLE user_roles
   CONSTRAINT user_roles_idx UNIQUE (user_id, role),
   FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE
 );
+GRANT ALL PRIVILEGES ON user_roles TO "user";
 
 CREATE TABLE meals
 (
@@ -36,3 +39,4 @@ CREATE TABLE meals
 );
 
 CREATE UNIQUE INDEX meals_unique_idx ON meals (description, user_id, dateTime);
+GRANT ALL PRIVILEGES ON meals TO "user";

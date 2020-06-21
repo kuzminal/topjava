@@ -20,7 +20,7 @@ public class SpringMain {
         try (ConfigurableApplicationContext appCtx = new ClassPathXmlApplicationContext("spring/spring-app.xml", "spring/spring-db.xml")) {
             System.out.println("Bean definition names: " + Arrays.toString(appCtx.getBeanDefinitionNames()));
             AdminRestController adminUserController = appCtx.getBean(AdminRestController.class);
-            User user = new User(null, "userName", "email@mail.ru", "password", Role.ROLE_ADMIN);
+            User user = new User(null, "userName", "email1@mail.ru", "password", Role.ROLE_ADMIN);
             adminUserController.create(user);
             adminUserController.update(user, user.getId());
             adminUserController.get(user.getId());
@@ -31,13 +31,13 @@ public class SpringMain {
             Meal meal1 = new Meal(null, LocalDateTime.of(2020, Month.MAY, 12, 10, 0), "Завтрак", 180);
             Meal meal2 = new Meal(null, LocalDateTime.of(2020, Month.MAY, 12, 10, 0), "Завтрак", 180);
             mealRestController.getAll();
-            mealRestController.delete(2);
+            mealRestController.delete(100002);
             //mealRestController.delete(8);
             mealRestController.save(meal1);
             mealRestController.save(meal2);
             mealRestController.update(meal1, meal1.getId());
             mealRestController.update(meal2, meal2.getId());
-            mealRestController.get(2);
+            mealRestController.get(100002);
             mealRestController.get(meal2.getId());
             meals.forEach(System.out::println);
         }
