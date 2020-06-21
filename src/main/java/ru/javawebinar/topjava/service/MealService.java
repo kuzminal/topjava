@@ -21,7 +21,6 @@ public class MealService {
     private MealRepository repository;
 
     @Autowired
-    @Qualifier("inMemoryRepository")
     public void setRepository(MealRepository repository) {
         this.repository = repository;
     }
