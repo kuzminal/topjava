@@ -20,9 +20,9 @@ public class TestData {
     public static final int ADMIN_ID = START_SEQ + 1;
     public static final int MEAL_ID = START_SEQ + 2;
 
-    public static final User USER = new User(USER_ID, "User", "user@yandex.ru", "password", Role.ROLE_USER);
-    public static final User ADMIN = new User(ADMIN_ID, "Admin", "admin@gmail.com", "admin", Role.ROLE_ADMIN);
-    public static final Meal MEAL = new Meal(MEAL_ID, LocalDateTime.of(2020,01, 30, 10, 0,0), "Завтрак", 500);
+    public static final User USER = new User(USER_ID, "user", "user@yandex.ru", "password", Role.ROLE_USER);
+    public static final User ADMIN = new User(ADMIN_ID, "admin", "admin@gmail.com", "admin", Role.ROLE_ADMIN);
+    public static final Meal MEAL = new Meal(MEAL_ID, LocalDateTime.of(2020,1, 30, 10, 0,0), "Завтрак", 500);
     public static final List<Meal> MEALS = Arrays.asList(
             new Meal(START_SEQ + 2, LocalDateTime.of(2020, 1,30, 10, 0, 0), "Завтрак", 500),
             new Meal(START_SEQ + 3, LocalDateTime.of(2020, 1,30, 13, 0, 0), "Обед", 1000),
@@ -33,11 +33,11 @@ public class TestData {
             new Meal(START_SEQ + 8, LocalDateTime.of(2020, 1,31, 20, 0, 0), "Ужин", 410));
 
     public static User getNew() {
-        return new User(null, "New", "new@gmail.com", "newPass", 1555, false, new Date(), Collections.singleton(Role.ROLE_USER));
+        return new User(null, "new", "new@gmail.com", "newpass", 1555, false, new Date(), Collections.singleton(Role.ROLE_USER));
     }
 
     public static Meal getNewMeal() {
-        Meal meal = new Meal(null, LocalDateTime.of(2020,1, 30, 18, 0,0), "Test Meal", 700);
+        Meal meal = new Meal(null, LocalDateTime.of(2020,1, 30, 18, 0,0), "test Meal", 700);
         meal.setUserId(USER_ID);
         return meal;
     }
@@ -64,20 +64,24 @@ public class TestData {
 
     public static User getUpdated() {
         User updated = new User(USER);
-        updated.setName("UpdatedName");
+        updated.setName("updated_name");
         updated.setCaloriesPerDay(330);
         return updated;
     }
 
-    public static <T> void assertMatch(T actual, T expected) {
-        assertThat(actual).isEqualToIgnoringGivenFields(expected, "registered", "roles");
+    public static <T> void assertMatch(T actual, T expected, String... fields) {
+        assertThat(actual).isEqualToIgnoringGivenFields(expected, fields);
     }
 
     public static void assertMatch(Iterable<User> actual, User... expected) {
-        assertMatchList(actual, Arrays.asList(expected));
+        assertMatchUserList(actual, Arrays.asList(expected));
     }
 
-    public static <T> void assertMatchList(Iterable<T> actual, Iterable<T> expected) {
+    public static void assertMatchUserList(Iterable<User> actual, Iterable<User> expected) {
         assertThat(actual).usingElementComparatorIgnoringFields("registered", "roles").isEqualTo(expected);
+    }
+
+    public static void assertMatchMealList(Iterable<Meal> actual, Iterable<Meal> expected, String... fields) {
+        assertThat(actual).usingElementComparatorIgnoringFields(fields).isEqualTo(expected);
     }
 }

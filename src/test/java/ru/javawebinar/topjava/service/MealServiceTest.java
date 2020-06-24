@@ -18,6 +18,7 @@ import static ru.javawebinar.topjava.TestData.*;
 
 @ContextConfiguration({
         "classpath:spring/spring-app.xml",
+        "classpath:spring/spring-repository.xml",
         "classpath:spring/spring-db.xml"
 })
 @RunWith(SpringRunner.class)
@@ -63,7 +64,7 @@ public class MealServiceTest {
     @Test
     public void getAll() {
         List<Meal> all = service.getAll(USER_ID);
-        assertMatchList(all, getMeals());
+        assertMatchMealList(all, getMeals());
     }
 
     @Test
@@ -82,7 +83,6 @@ public class MealServiceTest {
     @Test(expected = NotFoundException.class)
     public void updateNotFound() {
         Meal updated = getUpdatedMeal();
-        service.update(updated, USER_ID);
-        assertMatch(service.get(MEAL_ID, ADMIN_ID), updated);
+        service.update(updated, ADMIN_ID);
     }
 }

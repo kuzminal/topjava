@@ -19,6 +19,7 @@ import static ru.javawebinar.topjava.TestData.*;
 
 @ContextConfiguration({
         "classpath:spring/spring-app.xml",
+        "classpath:spring/spring-repository.xml",
         "classpath:spring/spring-db.xml"
 })
 @RunWith(SpringRunner.class)
@@ -40,8 +41,8 @@ public class UserServiceTest {
         User created = service.create(newUser);
         Integer newId = created.getId();
         newUser.setId(newId);
-        assertMatch(created, newUser);
-        assertMatch(service.get(newId), newUser);
+        assertMatch(created, newUser, "registered", "roles");
+        assertMatch(service.get(newId), newUser, "registered", "roles");
     }
 
     @Test(expected = DataAccessException.class)
@@ -63,7 +64,7 @@ public class UserServiceTest {
     @Test
     public void get() throws Exception {
         User user = service.get(USER_ID);
-        assertMatch(user, USER);
+        assertMatch(user, USER, "registered", "roles");
     }
 
     @Test(expected = NotFoundException.class)
@@ -74,14 +75,14 @@ public class UserServiceTest {
     @Test
     public void getByEmail() throws Exception {
         User user = service.getByEmail("user@yandex.ru");
-        assertMatch(user, USER);
+        assertMatch(user, USER, "registered", "roles");
     }
 
     @Test
     public void update() throws Exception {
         User updated = getUpdated();
         service.update(updated);
-        assertMatch(service.get(USER_ID), updated);
+        assertMatch(service.get(USER_ID), updated, "registered", "roles");
     }
 
     @Test
