@@ -6,11 +6,9 @@ import ru.javawebinar.topjava.model.User;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static ru.javawebinar.topjava.model.AbstractBaseEntity.START_SEQ;
@@ -38,17 +36,16 @@ public class TestData {
 
     public static Meal getNewMeal() {
         Meal meal = new Meal(null, LocalDateTime.of(2020,1, 30, 18, 0,0), "test Meal", 700);
-        meal.setUserId(USER_ID);
         return meal;
     }
 
     public static List<Meal> getMeals() {
-        MEALS.forEach(meal -> meal.setUserId(USER_ID));
+        MEALS.sort(Comparator.comparing(Meal::getDateTime).reversed());
         return MEALS;
     }
 
     public static List<Meal> getMealsHalfOpen() {
-        return getMeals().stream()
+        return MEALS.stream()
                 .filter(meal -> meal.getDateTime().compareTo(LocalDateTime.of(2020, 1, 30, 0, 0, 0)) >= 0)
                 .filter(meal -> meal.getDateTime().compareTo(LocalDateTime.of(2020, 1, 31, 0, 0, 0)) < 0)
                 .collect(Collectors.toList());
@@ -56,7 +53,6 @@ public class TestData {
 
     public static Meal getUpdatedMeal() {
         Meal updated = new Meal(MEAL);
-        updated.setUserId(USER_ID);
         updated.setDescription("UpdatedName");
         updated.setCalories(330);
         return updated;
@@ -69,11 +65,15 @@ public class TestData {
         return updated;
     }
 
-    public static <T> void assertMatch(T actual, T expected, String... fields) {
-        assertThat(actual).isEqualToIgnoringGivenFields(expected, fields);
+    public static void assertUserMatch(User actual, User expected) {
+        assertThat(actual).isEqualToIgnoringGivenFields(expected, "registered", "roles");
     }
 
-    public static void assertMatch(Iterable<User> actual, User... expected) {
+    public static void assertMealMatch(Meal actual, Meal expected) {
+        assertThat(actual).isEqualToIgnoringGivenFields(expected);
+    }
+
+    public static void assertUserMatch(Iterable<User> actual, User... expected) {
         assertMatchUserList(actual, Arrays.asList(expected));
     }
 

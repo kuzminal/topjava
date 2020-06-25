@@ -11,14 +11,12 @@ import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 
 import static ru.javawebinar.topjava.TestData.*;
 
 @ContextConfiguration({
         "classpath:spring/spring-app.xml",
-        "classpath:spring/spring-repository.xml",
         "classpath:spring/spring-db.xml"
 })
 @RunWith(SpringRunner.class)
@@ -34,8 +32,8 @@ public class MealServiceTest {
         Meal created = service.create(newMeal, USER_ID);
         Integer newId = created.getId();
         newMeal.setId(newId);
-        assertMatch(created, newMeal);
-        assertMatch(service.get(newId, USER_ID), newMeal);
+        assertMealMatch(created, newMeal);
+        assertMealMatch(service.get(newId, USER_ID), newMeal);
     }
 
     @Test(expected = NotFoundException.class)
@@ -52,8 +50,7 @@ public class MealServiceTest {
     @Test
     public void get() {
         Meal meal = service.get(MEAL_ID, USER_ID);
-        MEAL.setUserId(USER_ID);
-        assertMatch(meal, MEAL);
+        assertMealMatch(meal, MEAL);
     }
 
     @Test(expected = NotFoundException.class)
@@ -70,14 +67,14 @@ public class MealServiceTest {
     @Test
     public void getBetweenHalfOpen() {
         List<Meal> meal = service.getBetweenHalfOpen(LocalDate.of(2020, 1,30), LocalDate.of(2020, 1,30), USER_ID);
-        assertMatch(meal, getMealsHalfOpen());
+        assertMatchMealList(meal, getMealsHalfOpen());
     }
 
     @Test
     public void update() {
         Meal updated = getUpdatedMeal();
         service.update(updated, USER_ID);
-        assertMatch(service.get(MEAL_ID, USER_ID), updated);
+        assertMealMatch(service.get(MEAL_ID, USER_ID), updated);
     }
 
     @Test(expected = NotFoundException.class)
