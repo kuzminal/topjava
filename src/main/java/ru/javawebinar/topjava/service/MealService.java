@@ -22,7 +22,6 @@ public class MealService {
     private MealRepository repository;
 
     @Autowired
-    @Qualifier("inMemoryRepository")
     public void setRepository(MealRepository repository) {
         this.repository = repository;
     }
@@ -48,7 +47,7 @@ public class MealService {
         return repository.getAll(userId);
     }
 
-    public List<Meal> getBetweenHalfOpen(@Nullable LocalDate startDate, @Nullable LocalDate endDate, int userId) {
+    public List<Meal> getBetweenInclusive(@Nullable LocalDate startDate, @Nullable LocalDate endDate, int userId) {
         return repository.getBetweenHalfOpen(getStarInclusive(startDate), getEndInclusive(endDate), userId);
     }
 
