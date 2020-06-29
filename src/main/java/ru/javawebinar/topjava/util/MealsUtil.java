@@ -75,6 +75,9 @@ public class MealsUtil {
         return filteredByStreams(meals, meal -> Util.isBetweenHalfOpen(meal.getDateTime().toLocalTime(), startTime, endTime), caloriesPerDay);
     }
 
+    private MealsUtil() {
+    }
+
     public static List<MealTo> getTos(Collection<Meal> meals, int caloriesPerDay) {
         return filteredByStreams(meals, meal -> true, caloriesPerDay);
     }
