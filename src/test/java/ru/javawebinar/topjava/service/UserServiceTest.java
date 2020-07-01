@@ -1,7 +1,13 @@
 package ru.javawebinar.topjava.service;
 
+import org.junit.AfterClass;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TestRule;
+import org.junit.rules.TestWatcher;
+import org.junit.runner.Description;
 import org.junit.runner.RunWith;
+import org.junit.runners.model.Statement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.test.context.ContextConfiguration;
@@ -12,8 +18,10 @@ import ru.javawebinar.topjava.model.Role;
 import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 
+import java.time.LocalTime;
 import java.util.List;
 
+import static java.time.temporal.ChronoUnit.MILLIS;
 import static ru.javawebinar.topjava.UserTestData.*;
 
 @ContextConfiguration({
@@ -23,6 +31,42 @@ import static ru.javawebinar.topjava.UserTestData.*;
 @RunWith(SpringRunner.class)
 @Sql(scripts = "classpath:db/populateDB.sql", config = @SqlConfig(encoding = "UTF-8"))
 public class UserServiceTest {
+    private static String watchedLog = "";
+
+    @Rule
+    public TestRule watchman = new TestWatcher() {
+
+        public LocalTime time;
+
+        @Override
+        public Statement apply(Statement base, Description description) {
+            return super.apply(base, description);
+        }
+
+        @Override
+        protected void succeeded(Description description) {
+            watchedLog += description.getMethodName() + " - success " + MILLIS.between(time, LocalTime.now()) + " ms\n";
+            System.out.println("Test - " + description.getMethodName() + " - " + "success " + MILLIS.between(time, LocalTime.now()) + " ms");
+        }
+
+        @Override
+        protected void failed(Throwable e, Description description) {
+            watchedLog += description.getMethodName() + " - fail" + MILLIS.between(time, LocalTime.now()) + " ms\n";
+            System.out.println("Test - " + description.getMethodName() + " - fail" + MILLIS.between(time, LocalTime.now()) + " ms");
+        }
+
+        @Override
+        protected void starting(Description description) {
+            super.starting(description);
+            time = LocalTime.now();
+        }
+    };
+
+    @AfterClass
+    public static void print() {
+        System.out.println("\nTest summary:");
+        System.out.println(watchedLog);
+    }
 
     @Autowired
     private UserService service;
