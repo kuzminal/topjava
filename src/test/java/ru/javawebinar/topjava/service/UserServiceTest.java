@@ -51,7 +51,7 @@ public class UserServiceTest {
 
         @Override
         protected void failed(Throwable e, Description description) {
-            watchedLog += description.getMethodName() + " - fail" + MILLIS.between(time, LocalTime.now()) + " ms\n";
+            watchedLog += description.getMethodName() + " - fail " + MILLIS.between(time, LocalTime.now()) + " ms\n";
             System.out.println("Test - " + description.getMethodName() + " - fail" + MILLIS.between(time, LocalTime.now()) + " ms");
         }
 
