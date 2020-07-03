@@ -3,6 +3,7 @@ package ru.javawebinar.topjava.service;
 import org.junit.AfterClass;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.Stopwatch;
 import org.junit.rules.TestRule;
 import org.junit.rules.TestWatcher;
 import org.junit.runner.Description;
@@ -14,6 +15,7 @@ import org.springframework.test.context.jdbc.SqlConfig;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.transaction.annotation.Transactional;
 import ru.javawebinar.topjava.model.Meal;
+import ru.javawebinar.topjava.service.rules.RuleBasedTest;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 import org.junit.runners.model.Statement;
 
@@ -33,43 +35,7 @@ import static ru.javawebinar.topjava.UserTestData.USER_ID;
 })
 @RunWith(SpringRunner.class)
 @Sql(scripts = "classpath:db/populateDB.sql", config = @SqlConfig(encoding = "UTF-8"))
-public class MealServiceTest {
-    private static String watchedLog = "";
-
-    @Rule
-    public TestRule watchman = new TestWatcher() {
-
-        public LocalTime time;
-
-        @Override
-        public Statement apply(Statement base, Description description) {
-            return super.apply(base, description);
-        }
-
-        @Override
-        protected void starting(Description description) {
-            super.starting(description);
-            time = LocalTime.now();
-        }
-
-        @Override
-        protected void succeeded(Description description) {
-            watchedLog += description.getMethodName() + " - success " + MILLIS.between(time, LocalTime.now()) + " ms\n";
-            System.out.println("Test - " + description.getMethodName() + " - " + "success " + MILLIS.between(time, LocalTime.now()) + " ms");
-        }
-
-        @Override
-        protected void failed(Throwable e, Description description) {
-            watchedLog += description.getMethodName() + " - fail " + MILLIS.between(time, LocalTime.now()) + " ms\n";
-            System.out.println("Test - " + description.getMethodName() + " - fail" + MILLIS.between(time, LocalTime.now()) + " ms");
-        }
-    };
-
-    @AfterClass
-    public static void print() {
-        System.out.println("\nTest summary:");
-        System.out.println(watchedLog);
-    }
+public class MealServiceTest extends RuleBasedTest {
 
     @Autowired
     private MealService service;
@@ -91,7 +57,6 @@ public class MealServiceTest {
     }
 
     @Test
-    @Transactional
     public void create() throws Exception {
         Meal created = service.create(getNew(), USER_ID);
         int newId = created.id();
@@ -102,7 +67,6 @@ public class MealServiceTest {
     }
 
     @Test
-    @Transactional
     public void get() throws Exception {
         Meal actual = service.get(ADMIN_MEAL_ID, ADMIN_ID);
         MEAL_MATCHER.assertMatch(actual, ADMIN_MEAL1);
@@ -119,7 +83,6 @@ public class MealServiceTest {
     }
 
     @Test
-    @Transactional
     public void update() throws Exception {
         Meal updated = getUpdated();
         service.update(updated, USER_ID);
@@ -132,13 +95,11 @@ public class MealServiceTest {
     }
 
     @Test
-    @Transactional
     public void getAll() throws Exception {
         MEAL_MATCHER.assertMatch(service.getAll(USER_ID), MEALS);
     }
 
     @Test
-    @Transactional
     public void getBetweenInclusive() throws Exception {
         MEAL_MATCHER.assertMatch(service.getBetweenInclusive(
                 LocalDate.of(2020, Month.JANUARY, 30),
@@ -147,7 +108,6 @@ public class MealServiceTest {
     }
 
     @Test
-    @Transactional
     public void getBetweenWithNullDates() throws Exception {
         MEAL_MATCHER.assertMatch(service.getBetweenInclusive(null, null, USER_ID), MEALS);
     }
