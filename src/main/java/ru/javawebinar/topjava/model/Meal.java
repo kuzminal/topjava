@@ -47,4 +47,12 @@ public class Meal extends AbstractBaseEntity {
     public int getCalories() {
         return calories;
     }
+
+    public void setUser(User user) {
+        this.user = user;
+    }
+
+    public User getUser() {
+        return user;
+    }
 }
