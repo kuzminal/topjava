@@ -1,5 +1,6 @@
 package ru.javawebinar.topjava.repository.datajpa;
 
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -21,9 +22,9 @@ public interface CrudMealRepository extends JpaRepository<Meal, Integer> {
     @Query("SELECT m FROM Meal m WHERE m.id=:id and m.user.id=:userId")
     Meal getById(@Param("id") int id, @Param("userId") int userId);
 
-    @Query("SELECT m FROM Meal m WHERE m.user.id=:userId ORDER BY m.dateTime DESC")
-    List<Meal> getAll(@Param("userId") int userId);
+    @Query("SELECT m FROM Meal m WHERE m.user.id=:userId")
+    List<Meal> getAll(@Param("userId") int userId, Sort sort);
 
-    @Query("SELECT m FROM Meal m WHERE m.user.id=:userId AND m.dateTime>=:startDateTime AND m.dateTime<:endDateTime ORDER BY m.dateTime DESC")
-    List<Meal> getBetweenHalfOpen(@Param("startDateTime") LocalDateTime startDateTime, @Param("endDateTime") LocalDateTime endDateTime, @Param("userId") int userId);
+    @Query("SELECT m FROM Meal m WHERE m.user.id=:userId AND m.dateTime>=:startDateTime AND m.dateTime<:endDateTime")
+    List<Meal> getBetweenHalfOpen(@Param("startDateTime") LocalDateTime startDateTime, @Param("endDateTime") LocalDateTime endDateTime, @Param("userId") int userId, Sort sort);
 }

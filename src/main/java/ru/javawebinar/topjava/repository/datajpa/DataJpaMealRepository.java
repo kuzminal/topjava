@@ -1,6 +1,7 @@
 package ru.javawebinar.topjava.repository.datajpa;
 
 import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.JpaSort;
 import org.springframework.stereotype.Repository;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.repository.MealRepository;
@@ -42,12 +43,12 @@ public class DataJpaMealRepository implements MealRepository {
 
     @Override
     public List<Meal> getAll(int userId) {
-        return crudRepository.getAll(userId);
+        return crudRepository.getAll(userId, JpaSort.unsafe(Sort.Direction.DESC ,"dateTime"));
     }
 
     @Override
     public List<Meal> getBetweenHalfOpen(LocalDateTime startDateTime, LocalDateTime endDateTime, int userId) {
-        return crudRepository.getBetweenHalfOpen(startDateTime, endDateTime, userId);
+        return crudRepository.getBetweenHalfOpen(startDateTime, endDateTime, userId, JpaSort.unsafe(Sort.Direction.DESC, "dateTime"));
 
     }
 }

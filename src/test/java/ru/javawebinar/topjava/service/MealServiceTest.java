@@ -30,12 +30,12 @@ import static ru.javawebinar.topjava.UserTestData.USER_ID;
 
 @ContextConfiguration({
         "classpath:spring/spring-app.xml",
-        "classpath:spring/spring-db_test.xml"
+        "classpath:spring/spring-db.xml"
 })
 @RunWith(SpringRunner.class)
 @Sql(scripts = "classpath:db/populateDB.sql", config = @SqlConfig(encoding = "UTF-8"))
-@ActiveProfiles(resolver = ActiveDbProfileResolver.class)
-public class MealServiceTest {
+@ActiveProfiles(profiles = "postgres")
+public abstract class MealServiceTest {
     private static final Logger log = getLogger("result");
 
     private static final StringBuilder results = new StringBuilder();

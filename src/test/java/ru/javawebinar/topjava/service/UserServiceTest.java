@@ -22,12 +22,12 @@ import static ru.javawebinar.topjava.UserTestData.*;
 
 @ContextConfiguration({
         "classpath:spring/spring-app.xml",
-        "classpath:spring/spring-db_test.xml"
+        "classpath:spring/spring-db.xml"
 })
 @RunWith(SpringRunner.class)
 @Sql(scripts = "classpath:db/populateDB.sql", config = @SqlConfig(encoding = "UTF-8"))
-@ActiveProfiles(resolver = ActiveDbProfileResolver.class)
-public class UserServiceTest {
+@ActiveProfiles(profiles = "postgres")
+public abstract class UserServiceTest {
 
     @Autowired
     private UserService service;
