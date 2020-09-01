@@ -11,6 +11,7 @@ import ru.javawebinar.topjava.model.User;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 public interface CrudMealRepository extends JpaRepository<Meal, Integer> {
     @Transactional
@@ -20,7 +21,7 @@ public interface CrudMealRepository extends JpaRepository<Meal, Integer> {
     int delete(@Param("id") int id, @Param("userId") int userId);
 
     @Query("SELECT m FROM Meal m WHERE m.id=:id and m.user.id=:userId")
-    Meal getById(@Param("id") int id, @Param("userId") int userId);
+    Optional<Meal> getById(@Param("id") int id, @Param("userId") int userId);
 
     @Query("SELECT m FROM Meal m WHERE m.user.id=:userId")
     List<Meal> getAll(@Param("userId") int userId, Sort sort);
