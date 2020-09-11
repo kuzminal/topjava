@@ -4,6 +4,8 @@ import org.slf4j.Logger;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Profile;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.context.support.GenericXmlApplicationContext;
+import ru.javawebinar.topjava.Profiles;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.util.DateTimeUtil;
 import ru.javawebinar.topjava.web.meal.MealRestController;
@@ -26,15 +28,15 @@ public class MealServlet extends HttpServlet {
     private static final Logger log = getLogger(UserServlet.class);
 
     private MealRestController mealRestController;
-    private ConfigurableApplicationContext appCtx;
+    private GenericXmlApplicationContext appCtx;
 
     @Override
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
-        ConfigurableApplicationContext parrentCtx = new ClassPathXmlApplicationContext();
-        parrentCtx.getEnvironment().setActiveProfiles("postgres", "datajpa");
-        parrentCtx.refresh();
-        appCtx = new ClassPathXmlApplicationContext(new String[]{"spring/spring-app.xml", "spring/spring-db.xml"}, parrentCtx);
+        appCtx = new GenericXmlApplicationContext();
+        appCtx.getEnvironment().setActiveProfiles(Profiles.DATAJPA,Profiles.POSTGRES_DB);
+        appCtx.load("spring/spring-app.xml", "spring/spring-db.xml");
+        appCtx.refresh();
         mealRestController = appCtx.getBean(MealRestController.class);
     }
 
@@ -42,7 +44,6 @@ public class MealServlet extends HttpServlet {
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException, ServletException {
         String mealId = request.getParameter("mealId") != null ? request.getParameter("mealId") : "";
         String action = request.getParameter("action") != null ? request.getParameter("action") : "";
-        Map<String, String> filterParams = new HashMap<>();
         log.debug("Action = " + action + " mealId = " + mealId);
         switch (action) {
             case "delete":
