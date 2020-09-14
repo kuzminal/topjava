@@ -15,13 +15,9 @@ import static ru.javawebinar.topjava.UserTestData.*;
 @ActiveProfiles(profiles = Profiles.DATAJPA)
 public class DataJpaMealServiceTest extends MealServiceTest {
 
-    @Autowired
-    private MealService service;
-
     @Test
-    @Transactional
     public void getWithUser() throws Exception {
-        Meal actual = service.get(ADMIN_MEAL_ID, ADMIN_ID);
+        Meal actual = service.getWithUser(ADMIN_MEAL_ID, ADMIN_ID);
         assertMatch(actual.getUser(), ADMIN);
         MEAL_MATCHER.assertMatch(actual, ADMIN_MEAL1);
     }

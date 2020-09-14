@@ -17,16 +17,10 @@ import static ru.javawebinar.topjava.UserTestData.*;
 @ActiveProfiles(profiles = Profiles.DATAJPA)
 public class DataJpaUserServiceTest extends UserServiceTest {
 
-    @Autowired
-    private UserService service;
-
     @Test
-    @Transactional
     public void getWithMeal() throws Exception {
-        User user = service.get(USER_ID);
-        if (user.getMeals().size() != 0) {
-            MEAL_MATCHER.assertMatch(user.getMeals(), MEALS);
-        }
+        User user = service.getWithMeals(USER_ID);
+        MEAL_MATCHER.assertMatch(user.getMeals(), MEALS);
         assertMatch(user, USER);
     }
 }

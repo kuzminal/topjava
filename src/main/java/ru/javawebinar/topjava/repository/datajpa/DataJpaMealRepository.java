@@ -1,8 +1,10 @@
 package ru.javawebinar.topjava.repository.datajpa;
 
+import org.hibernate.Hibernate;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.JpaSort;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.repository.MealRepository;
 
@@ -42,6 +44,13 @@ public class DataJpaMealRepository implements MealRepository {
     @Override
     public List<Meal> getAll(int userId) {
         return crudRepository.getAll(userId, JpaSort.unsafe(Sort.Direction.DESC ,"dateTime"));
+    }
+
+    @Transactional
+    public Meal getWithUser(int id, int userId) {
+        Meal meal = getById(id, userId);
+        Hibernate.initialize(meal.getUser());
+        return meal;
     }
 
     @Override
