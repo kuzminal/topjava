@@ -12,7 +12,7 @@ import ru.javawebinar.topjava.service.MealServiceTest;
 import static ru.javawebinar.topjava.MealTestData.*;
 import static ru.javawebinar.topjava.UserTestData.*;
 
-@ActiveProfiles(profiles = Profiles.DATAJPA)
+@ActiveProfiles(profiles = Profiles.REPOSITORY_IMPLEMENTATION)
 public class DataJpaMealServiceTest extends MealServiceTest {
 
     @Test

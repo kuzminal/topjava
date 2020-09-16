@@ -20,7 +20,6 @@ import static ru.javawebinar.topjava.UserTestData.USER_ID;
 
 @RunWith(SpringRunner.class)
 public abstract class MealServiceTest extends BaseTest{
-    private static final Logger log = getLogger("result");
 
     @Autowired
     protected MealService service;

@@ -12,7 +12,9 @@ import org.springframework.stereotype.Repository;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.repository.MealRepository;
 
+import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.AbstractList;
 import java.util.List;
 
 @Repository
@@ -45,7 +47,7 @@ public class JdbcMealRepository implements MealRepository {
                 .addValue("id", meal.getId())
                 .addValue("description", meal.getDescription())
                 .addValue("calories", meal.getCalories())
-                .addValue("date_time", intervalService.getDate(meal.getDateTime()))
+                .addValue("date_time", (Timestamp.valueOf(meal.getDateTime())))
                 .addValue("user_id", userId);
 
         if (meal.isNew()) {
@@ -82,8 +84,9 @@ public class JdbcMealRepository implements MealRepository {
 
     @Override
     public List<Meal> getBetweenHalfOpen(LocalDateTime startDateTime, LocalDateTime endDateTime, int userId) {
-        return jdbcTemplate.query(
+        return intervalService.makeQuery(jdbcTemplate, startDateTime, endDateTime, userId);
+                /*jdbcTemplate.query(
                 "SELECT * FROM meals WHERE user_id=?  AND date_time >=  ? AND date_time < ? ORDER BY date_time DESC",
-                ROW_MAPPER, userId, intervalService.getDate(startDateTime), intervalService.getDate(endDateTime));
+                ROW_MAPPER, userId, intervalService.getDate(startDateTime), intervalService.getDate(endDateTime));*/
     }
 }

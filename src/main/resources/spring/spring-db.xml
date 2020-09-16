@@ -34,7 +34,7 @@
               p:password="${database.password}"/>
 
         <bean id="intervalDataProvider"
-              class="ru.javawebinar.topjava.repository.jdbc.provider.hsql.IntervalDataProvider"/>
+              class="ru.javawebinar.topjava.repository.jdbc.HsqlIntervalProvider"/>
     </beans>
 
     <beans profile="postgres">
@@ -57,7 +57,7 @@
               p:password="${database.password}"/>
 
         <bean id="intervalDataProvider"
-              class="ru.javawebinar.topjava.repository.jdbc.provider.postgres.IntervalDataProvider"/>
+              class="ru.javawebinar.topjava.repository.jdbc.PostgresIntervalProvider"/>
     </beans>
 
     <beans profile="jdbc">
