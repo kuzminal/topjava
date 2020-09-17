@@ -46,10 +46,7 @@ public class DataJpaUserRepository implements UserRepository {
     }
 
     @Override
-    @Transactional
     public User getWithMeal(int id) {
-        User user = get(id);
-        Hibernate.initialize(user.getMeals());
-        return user;
+        return crudRepository.getWithMeal(id).orElse(null);
     }
 }

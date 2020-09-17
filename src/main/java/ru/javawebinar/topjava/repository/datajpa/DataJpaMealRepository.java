@@ -46,11 +46,8 @@ public class DataJpaMealRepository implements MealRepository {
         return crudRepository.getAll(userId, JpaSort.unsafe(Sort.Direction.DESC ,"dateTime"));
     }
 
-    @Transactional
     public Meal getWithUser(int id, int userId) {
-        Meal meal = getById(id, userId);
-        Hibernate.initialize(meal.getUser());
-        return meal;
+        return crudRepository.getWithUser(id, userId).orElse(null);
     }
 
     @Override
