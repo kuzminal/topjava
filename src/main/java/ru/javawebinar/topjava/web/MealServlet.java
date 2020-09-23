@@ -3,6 +3,7 @@ package ru.javawebinar.topjava.web;
 import org.slf4j.Logger;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
+import ru.javawebinar.topjava.Profiles;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.util.DateTimeUtil;
 import ru.javawebinar.topjava.web.meal.MealRestController;
@@ -25,12 +26,16 @@ public class MealServlet extends HttpServlet {
     private static final Logger log = getLogger(UserServlet.class);
 
     private MealRestController mealRestController;
-    private ConfigurableApplicationContext appCtx;
+    private ClassPathXmlApplicationContext appCtx;
 
     @Override
     public void init(ServletConfig config) throws ServletException {
         super.init(config);
         appCtx = new ClassPathXmlApplicationContext("spring/spring-app.xml", "spring/spring-db.xml");
+        appCtx = new ClassPathXmlApplicationContext(new String[]{"spring/spring-app.xml", "spring/spring-db.xml"}, false);
+//       springContext.setConfigLocations("spring/spring-app.xml", "spring/spring-db.xml");
+        appCtx.getEnvironment().setActiveProfiles(Profiles.getActiveDbProfile(), Profiles.REPOSITORY_IMPLEMENTATION);
+        appCtx.refresh();
         mealRestController = appCtx.getBean(MealRestController.class);
     }
 
