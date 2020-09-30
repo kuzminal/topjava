@@ -102,7 +102,7 @@ public class MealServlet extends HttpServlet {
 
     @Override
     public void destroy() {
-        appCtx.close();
+        springContext.close();
         super.destroy();
     }
 }
